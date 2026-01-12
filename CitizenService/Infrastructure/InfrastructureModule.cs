@@ -110,7 +110,6 @@ namespace Infrastructure
                     });
                 });
 
-                services.AddScoped<IUserUpdatePublisher, UserUpdatePublisher>();
                 services.AddScoped<IEmailSendPublisher, EmailSendPublisher>();
                 services.AddScoped<ISignalRPublisher, SignalRPublisher>();
 

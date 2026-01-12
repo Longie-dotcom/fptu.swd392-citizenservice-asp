@@ -1,5 +1,4 @@
-﻿using Domain.Aggregate;
-using Domain.Enum;
+﻿using Domain.Enum;
 using Domain.ValueObject;
 
 namespace Application.DTO
@@ -74,12 +73,11 @@ namespace Application.DTO
         public string ImageName { get; set; } = string.Empty;
         public CollectionReportStatus Status { get; set; }
         public DateTime ReportAt { get; set; }
-        public CitizenProfileDTO CitizenProfile { get; set; } = new CitizenProfileDTO();
+        public Guid CitizenProfileID { get; set; }
     }
 
     public class CreateCollectionReportDTO
     {
-        public Guid CitizenAreaId { get; set; }
         public Guid CitizenProfileId { get; set; }
         public string WasteType { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
@@ -95,9 +93,10 @@ namespace Application.DTO
         public string Description { get; set; } = string.Empty;
         public string Title { get; set; } = string.Empty;
         public string ImageName { get; set; } = string.Empty;
-        public ComplaintReportStatus Status { get;  set; }
-        public DateTime ReportAt { get;  set; }
-        public CitizenProfileDTO CitizenProfile { get; set; } = new CitizenProfileDTO();
+        public ComplaintReportStatus Status { get; set; }
+        public DateTime ReportAt { get; set; }
+        public Guid CitizenProfileID { get; set; }
+        public CitizenAreaDTO CitizenArea { get; set; } = new CitizenAreaDTO();
     }
 
     public class CreateComplaintReportDTO
@@ -116,6 +115,7 @@ namespace Application.DTO
         public int Point { get; set; }
         public string Reason { get; set; } = string.Empty;
         public DateTime OccurredAt { get; set; }
-        public CitizenProfileDTO CitizenProfile { get; set; } = new CitizenProfileDTO();
+        public Guid CitizenProfileID { get; set; }
+        public CitizenAreaDTO CitizenArea { get; set; } = new CitizenAreaDTO();
     }
 }

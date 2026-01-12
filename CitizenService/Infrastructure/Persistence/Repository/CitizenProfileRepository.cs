@@ -48,7 +48,9 @@ namespace Infrastructure.Persistence.Repository
             return await context.CitizenProfiles
                 .Include(c => c.CollectionReports)
                 .Include(c => c.ComplaintReports)
+                    .ThenInclude(cr => cr.CitizenArea)
                 .Include(c => c.RewardHistories)
+                    .ThenInclude(cr => cr.CitizenArea)
                 .FirstOrDefaultAsync(c => c.CitizenProfileID == citizenProfileId);
         }
 

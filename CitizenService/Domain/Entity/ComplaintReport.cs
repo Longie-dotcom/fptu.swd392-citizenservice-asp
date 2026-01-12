@@ -16,10 +16,9 @@ namespace Domain.Entity
         public ComplaintReportStatus Status { get; private set; }
         public DateTime ReportAt { get; private set; }
 
-        public Guid CitizenProfileId { get; private set; }
-        public Guid CitizenAreaId { get; private set; }
+        public Guid CitizenProfileID { get; private set; }
+        public Guid CitizenAreaID { get; private set; }
         public CitizenArea CitizenArea { get; private set; }
-        public CitizenProfile CitizenProfile { get; private set; }
         #endregion
 
         protected ComplaintReport() { }
@@ -32,8 +31,8 @@ namespace Domain.Entity
             string title,
             string imageName)
         {
-            CitizenProfileId = citizenProfileId;
-            CitizenAreaId = citizenAreaId;
+            CitizenProfileID = citizenProfileId;
+            CitizenAreaID = citizenAreaId;
             ComplaintReportID = complaintReportId;
             Description = description;
             Title = title;

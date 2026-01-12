@@ -93,10 +93,6 @@ namespace Application.Service
             });
 
             // Mapping
-            ServiceLogger.Warning(Level.Service, $"AAAAAAAAAAAAAAAAAA:{profile.CollectionReports.Count}");
-            ServiceLogger.Warning(Level.Service, $"BBBBBBBBBBBBBBBBBB:{profile.ComplaintReports.Count}");
-
-
             var mappedProfile = mapper.Map<CitizenProfileDetailDTO>(profile);
             mappedProfile.Email = response.Email;
             mappedProfile.FullName = response.FullName;
@@ -155,7 +151,6 @@ namespace Application.Service
 
             // Apply domain
             var report = profile.AddCollectionReport(
-                dto.CitizenAreaId,
                 Guid.NewGuid(),
                 dto.WasteType,
                 dto.Description,

@@ -97,7 +97,6 @@ namespace Domain.Aggregate
         }
 
         public CollectionReport AddCollectionReport(
-            Guid citizenAreaId,
             Guid collectionReportId,
             string wasteType,
             string description,
@@ -122,7 +121,6 @@ namespace Domain.Aggregate
 
             var report = new CollectionReport(
                 CitizenProfileID,
-                citizenAreaId,
                 collectionReportId,
                 wasteType,
                 description,

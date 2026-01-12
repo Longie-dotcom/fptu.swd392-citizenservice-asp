@@ -2,7 +2,6 @@
 using AutoMapper;
 using Domain.Aggregate;
 using Domain.Entity;
-using System.Data;
 
 namespace Application.Helper
 {
@@ -17,15 +16,13 @@ namespace Application.Helper
 
             #region Citizen
             // Entity
-            CreateMap<CollectionReport, CollectionReportDTO>()
-                .ForMember(dest => dest.CitizenProfile,
-                    opt => opt.MapFrom(src => src.CitizenProfile));
+            CreateMap<CollectionReport, CollectionReportDTO>();
             CreateMap<ComplaintReport, ComplaintReportDTO>()
-                .ForMember(dest => dest.CitizenProfile,
-                    opt => opt.MapFrom(src => src.CitizenProfile));
+                .ForMember(dest => dest.CitizenArea,
+                    opt => opt.MapFrom(src => src.CitizenArea));
             CreateMap<RewardHistory, RewardHistoryDTO>()
-                .ForMember(dest => dest.CitizenProfile,
-                    opt => opt.MapFrom(src => src.CitizenProfile));
+                .ForMember(dest => dest.CitizenArea,
+                    opt => opt.MapFrom(src => src.CitizenArea));
 
             // Aggregate
             CreateMap<CitizenProfile, CitizenProfileDTO>();

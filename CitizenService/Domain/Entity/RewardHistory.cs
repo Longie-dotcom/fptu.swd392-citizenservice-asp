@@ -13,19 +13,22 @@ namespace Domain.Entity
         public string Reason { get; private set; }
         public DateTime OccurredAt { get; private set; }
 
-        public Guid CitizenProfileId { get; private set; }
-        public Guid CitizenAreaId { get; private set; }
+        public Guid CitizenProfileID { get; private set; }
+        public Guid CitizenAreaID { get; private set; }
         public CitizenArea CitizenArea { get; private set; }
-        public CitizenProfile CitizenProfile { get; private set; }
         #endregion
 
         protected RewardHistory() { }
 
         public RewardHistory(
+            Guid citizenProfileId,
+            Guid citizenAreaId,
             Guid rewardHistoryId, 
             int point, 
             string reason)
         {
+            CitizenProfileID = citizenProfileId;
+            CitizenAreaID = citizenAreaId;
             RewardHistoryID = rewardHistoryId;
             Point = point;
             Reason = reason;

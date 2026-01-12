@@ -33,18 +33,18 @@ public class CitizenDBContext : DbContext
             entity.Property(c => c.IsActive).HasDefaultValue(true);
 
             entity.HasMany(c => c.CollectionReports)
-                  .WithOne(r => r.CitizenProfile)
-                  .HasForeignKey(r => r.CitizenProfileId)
+                  .WithOne()
+                  .HasForeignKey(r => r.CitizenProfileID)
                   .OnDelete(DeleteBehavior.Cascade);
 
             entity.HasMany(c => c.ComplaintReports)
-                  .WithOne(r => r.CitizenProfile)
-                  .HasForeignKey(r => r.CitizenProfileId)
+                  .WithOne()
+                  .HasForeignKey(r => r.CitizenProfileID)
                   .OnDelete(DeleteBehavior.Cascade);
 
             entity.HasMany(c => c.RewardHistories)
-                  .WithOne(r => r.CitizenProfile)
-                  .HasForeignKey(r => r.CitizenProfileId)
+                  .WithOne()
+                  .HasForeignKey(r => r.CitizenProfileID)
                   .OnDelete(DeleteBehavior.Cascade);
         });
 
@@ -67,19 +67,13 @@ public class CitizenDBContext : DbContext
         {
             entity.HasKey(r => r.CollectionReportID);
 
-            entity.Property(r => r.CitizenProfileId).IsRequired();
-            entity.Property(r => r.CitizenAreaId).IsRequired();
+            entity.Property(r => r.CitizenProfileID).IsRequired();
 
             entity.Property(r => r.WasteType).IsRequired();
             entity.Property(r => r.Description);
             entity.Property(r => r.ImageName);
             entity.Property(r => r.Status).IsRequired();
             entity.Property(r => r.ReportAt).IsRequired();
-
-            entity.HasOne(r => r.CitizenArea)
-                  .WithMany()
-                  .HasForeignKey(r => r.CitizenAreaId)
-                  .OnDelete(DeleteBehavior.Restrict);
 
             entity.OwnsOne(r => r.GPS);
         });
@@ -91,8 +85,8 @@ public class CitizenDBContext : DbContext
         {
             entity.HasKey(r => r.ComplaintReportID);
 
-            entity.Property(r => r.CitizenProfileId).IsRequired();
-            entity.Property(r => r.CitizenAreaId).IsRequired();
+            entity.Property(r => r.CitizenProfileID).IsRequired();
+            entity.Property(r => r.CitizenAreaID).IsRequired();
 
             entity.Property(r => r.Title).IsRequired();
             entity.Property(r => r.Description).IsRequired();
@@ -102,7 +96,7 @@ public class CitizenDBContext : DbContext
 
             entity.HasOne(r => r.CitizenArea)
                   .WithMany()
-                  .HasForeignKey(r => r.CitizenAreaId)
+                  .HasForeignKey(r => r.CitizenAreaID)
                   .OnDelete(DeleteBehavior.Restrict);
         });
 
@@ -113,8 +107,8 @@ public class CitizenDBContext : DbContext
         {
             entity.HasKey(r => r.RewardHistoryID);
 
-            entity.Property(r => r.CitizenProfileId).IsRequired();
-            entity.Property(r => r.CitizenAreaId).IsRequired();
+            entity.Property(r => r.CitizenProfileID).IsRequired();
+            entity.Property(r => r.CitizenAreaID).IsRequired();
 
             entity.Property(r => r.Point).IsRequired();
             entity.Property(r => r.Reason).IsRequired();
@@ -122,7 +116,7 @@ public class CitizenDBContext : DbContext
 
             entity.HasOne(r => r.CitizenArea)
                   .WithMany()
-                  .HasForeignKey(r => r.CitizenAreaId)
+                  .HasForeignKey(r => r.CitizenAreaID)
                   .OnDelete(DeleteBehavior.Restrict);
         });
 

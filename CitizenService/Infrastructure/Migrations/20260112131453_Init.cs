@@ -71,21 +71,14 @@ namespace Infrastructure.Migrations
                     ImageName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     ReportAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CitizenProfileId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CitizenAreaId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    CitizenProfileID = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_CollectionReports", x => x.CollectionReportID);
                     table.ForeignKey(
-                        name: "FK_CollectionReports_CitizenAreas_CitizenAreaId",
-                        column: x => x.CitizenAreaId,
-                        principalTable: "CitizenAreas",
-                        principalColumn: "CitizenAreaID",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_CollectionReports_CitizenProfiles_CitizenProfileId",
-                        column: x => x.CitizenProfileId,
+                        name: "FK_CollectionReports_CitizenProfiles_CitizenProfileID",
+                        column: x => x.CitizenProfileID,
                         principalTable: "CitizenProfiles",
                         principalColumn: "CitizenProfileID",
                         onDelete: ReferentialAction.Cascade);
@@ -101,21 +94,21 @@ namespace Infrastructure.Migrations
                     ImageName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     ReportAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CitizenProfileId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CitizenAreaId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    CitizenProfileID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CitizenAreaID = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ComplaintReports", x => x.ComplaintReportID);
                     table.ForeignKey(
-                        name: "FK_ComplaintReports_CitizenAreas_CitizenAreaId",
-                        column: x => x.CitizenAreaId,
+                        name: "FK_ComplaintReports_CitizenAreas_CitizenAreaID",
+                        column: x => x.CitizenAreaID,
                         principalTable: "CitizenAreas",
                         principalColumn: "CitizenAreaID",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_ComplaintReports_CitizenProfiles_CitizenProfileId",
-                        column: x => x.CitizenProfileId,
+                        name: "FK_ComplaintReports_CitizenProfiles_CitizenProfileID",
+                        column: x => x.CitizenProfileID,
                         principalTable: "CitizenProfiles",
                         principalColumn: "CitizenProfileID",
                         onDelete: ReferentialAction.Cascade);
@@ -129,55 +122,50 @@ namespace Infrastructure.Migrations
                     Point = table.Column<int>(type: "int", nullable: false),
                     Reason = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     OccurredAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CitizenProfileId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CitizenAreaId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    CitizenProfileID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CitizenAreaID = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_RewardHistories", x => x.RewardHistoryID);
                     table.ForeignKey(
-                        name: "FK_RewardHistories_CitizenAreas_CitizenAreaId",
-                        column: x => x.CitizenAreaId,
+                        name: "FK_RewardHistories_CitizenAreas_CitizenAreaID",
+                        column: x => x.CitizenAreaID,
                         principalTable: "CitizenAreas",
                         principalColumn: "CitizenAreaID",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_RewardHistories_CitizenProfiles_CitizenProfileId",
-                        column: x => x.CitizenProfileId,
+                        name: "FK_RewardHistories_CitizenProfiles_CitizenProfileID",
+                        column: x => x.CitizenProfileID,
                         principalTable: "CitizenProfiles",
                         principalColumn: "CitizenProfileID",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_CollectionReports_CitizenAreaId",
+                name: "IX_CollectionReports_CitizenProfileID",
                 table: "CollectionReports",
-                column: "CitizenAreaId");
+                column: "CitizenProfileID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CollectionReports_CitizenProfileId",
-                table: "CollectionReports",
-                column: "CitizenProfileId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ComplaintReports_CitizenAreaId",
+                name: "IX_ComplaintReports_CitizenAreaID",
                 table: "ComplaintReports",
-                column: "CitizenAreaId");
+                column: "CitizenAreaID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ComplaintReports_CitizenProfileId",
+                name: "IX_ComplaintReports_CitizenProfileID",
                 table: "ComplaintReports",
-                column: "CitizenProfileId");
+                column: "CitizenProfileID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RewardHistories_CitizenAreaId",
+                name: "IX_RewardHistories_CitizenAreaID",
                 table: "RewardHistories",
-                column: "CitizenAreaId");
+                column: "CitizenAreaID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RewardHistories_CitizenProfileId",
+                name: "IX_RewardHistories_CitizenProfileID",
                 table: "RewardHistories",
-                column: "CitizenProfileId");
+                column: "CitizenProfileID");
         }
 
         /// <inheritdoc />

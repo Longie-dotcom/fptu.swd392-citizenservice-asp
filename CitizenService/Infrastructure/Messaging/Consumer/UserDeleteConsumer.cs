@@ -7,12 +7,12 @@ namespace Infrastructure.Messaging.Consumer
 {
     public class UserDeleteConsumer : IConsumer<UserDeleteDTO>
     {
-        private readonly ICitizenService _userService;
+        private readonly ICitizenService citizenService;
 
         public UserDeleteConsumer(
-            ICitizenService userService)
+            ICitizenService citizenService)
         {
-            _userService = userService;
+            this.citizenService = citizenService;
         }
 
         public async Task Consume(ConsumeContext<UserDeleteDTO> context)
@@ -22,7 +22,7 @@ namespace Infrastructure.Messaging.Consumer
                 var message = context.Message;
                 ServiceLogger.Logging(
                     Level.Infrastructure, $"Delete user data: {message.UserID}");
-                await _userService.UserSyncDeleting(message);
+                await citizenService.UserSyncDeleting(message);
             }
             catch (Exception ex)
             {

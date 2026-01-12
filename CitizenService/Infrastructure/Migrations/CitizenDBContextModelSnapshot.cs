@@ -118,10 +118,7 @@ namespace Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("CitizenAreaId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CitizenProfileId")
+                    b.Property<Guid>("CitizenProfileID")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Description")
@@ -144,9 +141,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("CollectionReportID");
 
-                    b.HasIndex("CitizenAreaId");
-
-                    b.HasIndex("CitizenProfileId");
+                    b.HasIndex("CitizenProfileID");
 
                     b.ToTable("CollectionReports");
                 });
@@ -157,10 +152,10 @@ namespace Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("CitizenAreaId")
+                    b.Property<Guid>("CitizenAreaID")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("CitizenProfileId")
+                    b.Property<Guid>("CitizenProfileID")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Description")
@@ -183,9 +178,9 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("ComplaintReportID");
 
-                    b.HasIndex("CitizenAreaId");
+                    b.HasIndex("CitizenAreaID");
 
-                    b.HasIndex("CitizenProfileId");
+                    b.HasIndex("CitizenProfileID");
 
                     b.ToTable("ComplaintReports");
                 });
@@ -196,10 +191,10 @@ namespace Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("CitizenAreaId")
+                    b.Property<Guid>("CitizenAreaID")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("CitizenProfileId")
+                    b.Property<Guid>("CitizenProfileID")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("OccurredAt")
@@ -214,24 +209,18 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("RewardHistoryID");
 
-                    b.HasIndex("CitizenAreaId");
+                    b.HasIndex("CitizenAreaID");
 
-                    b.HasIndex("CitizenProfileId");
+                    b.HasIndex("CitizenProfileID");
 
                     b.ToTable("RewardHistories");
                 });
 
             modelBuilder.Entity("Domain.Entity.CollectionReport", b =>
                 {
-                    b.HasOne("Domain.Aggregate.CitizenArea", "CitizenArea")
-                        .WithMany()
-                        .HasForeignKey("CitizenAreaId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Aggregate.CitizenProfile", "CitizenProfile")
+                    b.HasOne("Domain.Aggregate.CitizenProfile", null)
                         .WithMany("CollectionReports")
-                        .HasForeignKey("CitizenProfileId")
+                        .HasForeignKey("CitizenProfileID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -254,10 +243,6 @@ namespace Infrastructure.Migrations
                                 .HasForeignKey("CollectionReportID");
                         });
 
-                    b.Navigation("CitizenArea");
-
-                    b.Navigation("CitizenProfile");
-
                     b.Navigation("GPS")
                         .IsRequired();
                 });
@@ -266,38 +251,34 @@ namespace Infrastructure.Migrations
                 {
                     b.HasOne("Domain.Aggregate.CitizenArea", "CitizenArea")
                         .WithMany()
-                        .HasForeignKey("CitizenAreaId")
+                        .HasForeignKey("CitizenAreaID")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domain.Aggregate.CitizenProfile", "CitizenProfile")
+                    b.HasOne("Domain.Aggregate.CitizenProfile", null)
                         .WithMany("ComplaintReports")
-                        .HasForeignKey("CitizenProfileId")
+                        .HasForeignKey("CitizenProfileID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("CitizenArea");
-
-                    b.Navigation("CitizenProfile");
                 });
 
             modelBuilder.Entity("Domain.Entity.RewardHistory", b =>
                 {
                     b.HasOne("Domain.Aggregate.CitizenArea", "CitizenArea")
                         .WithMany()
-                        .HasForeignKey("CitizenAreaId")
+                        .HasForeignKey("CitizenAreaID")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domain.Aggregate.CitizenProfile", "CitizenProfile")
+                    b.HasOne("Domain.Aggregate.CitizenProfile", null)
                         .WithMany("RewardHistories")
-                        .HasForeignKey("CitizenProfileId")
+                        .HasForeignKey("CitizenProfileID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("CitizenArea");
-
-                    b.Navigation("CitizenProfile");
                 });
 
             modelBuilder.Entity("Domain.Aggregate.CitizenProfile", b =>
