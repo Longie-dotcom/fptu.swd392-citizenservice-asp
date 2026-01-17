@@ -66,6 +66,18 @@ namespace Infrastructure.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
 
+                    b.Property<double>("MaxLat")
+                        .HasColumnType("float");
+
+                    b.Property<double>("MaxLng")
+                        .HasColumnType("float");
+
+                    b.Property<double>("MinLat")
+                        .HasColumnType("float");
+
+                    b.Property<double>("MinLng")
+                        .HasColumnType("float");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -126,6 +138,10 @@ namespace Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ImageName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RegionCode")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

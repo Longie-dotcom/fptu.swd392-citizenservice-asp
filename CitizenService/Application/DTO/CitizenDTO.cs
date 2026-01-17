@@ -74,6 +74,8 @@ namespace Application.DTO
         public CollectionReportStatus Status { get; set; }
         public DateTime ReportAt { get; set; }
         public Guid CitizenProfileID { get; set; }
+
+        public string? RegionCode { get; set; }
     }
 
     public class CreateCollectionReportDTO

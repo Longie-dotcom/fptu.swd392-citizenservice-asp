@@ -11,6 +11,8 @@ using Domain.ValueObject;
 using Google.Protobuf.WellKnownTypes;
 using IAMServer.gRPC;
 using SWD392.MessageBroker;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 namespace Application.Service
 {
@@ -149,12 +151,16 @@ namespace Application.Service
             // Validate ownership
             ValidateOwnership(profile.UserID, callerId, callerRole);
 
+            // Logic: convert lat, lng to region code
+            string regionCode = "";
+
             // Apply domain
             var report = profile.AddCollectionReport(
                 Guid.NewGuid(),
                 dto.WasteType,
                 dto.Description,
                 new GPS(dto.Latitude, dto.Longitude),
+                regionCode,
                 dto.ImageName);
 
             // Apply persistence
@@ -197,6 +203,8 @@ namespace Application.Service
                 .AddComplaintReport(report);
             await unitOfWork.CommitAsync(callerId.ToString());
         }
+
+        // Get all report
 
         public async Task UserSyncDeleting(UserDeleteDTO dto)
         {

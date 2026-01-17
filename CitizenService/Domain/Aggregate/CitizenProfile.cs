@@ -101,6 +101,7 @@ namespace Domain.Aggregate
             string wasteType,
             string description,
             GPS gps,
+            string regionCode,
             string imageName)
         {
             if (!IsActive)
@@ -119,12 +120,17 @@ namespace Domain.Aggregate
                 throw new CitizenProfileAggregateException(
                     "Collection description is required");
 
+            if (string.IsNullOrWhiteSpace(regionCode))
+                throw new CitizenProfileAggregateException(
+                    "Region code is required");
+
             var report = new CollectionReport(
                 CitizenProfileID,
                 collectionReportId,
                 wasteType,
                 description,
                 gps,
+                regionCode,
                 imageName
             );
 

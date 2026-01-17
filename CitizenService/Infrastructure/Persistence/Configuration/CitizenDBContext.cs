@@ -57,6 +57,10 @@ public class CitizenDBContext : DbContext
 
             entity.Property(a => a.Name).IsRequired();
             entity.Property(a => a.RegionCode).IsRequired();
+            entity.Property(a => a.MinLat).IsRequired();
+            entity.Property(a => a.MaxLat).IsRequired();
+            entity.Property(a => a.MinLng).IsRequired();
+            entity.Property(a => a.MaxLng).IsRequired();
             entity.Property(a => a.IsActive).HasDefaultValue(true);
         });
 
@@ -74,7 +78,7 @@ public class CitizenDBContext : DbContext
             entity.Property(r => r.ImageName);
             entity.Property(r => r.Status).IsRequired();
             entity.Property(r => r.ReportAt).IsRequired();
-
+            entity.Property(r => r.RegionCode).IsRequired();
             entity.OwnsOne(r => r.GPS);
         });
 

@@ -17,6 +17,7 @@ namespace Domain.Entity
         public string ImageName { get; private set; }
         public CollectionReportStatus Status { get; private set; }
         public DateTime ReportAt { get; private set; }
+        public string RegionCode { get; private set; }
 
         public Guid CitizenProfileID { get; private set; }
         #endregion
@@ -29,6 +30,7 @@ namespace Domain.Entity
             string wasteType, 
             string description, 
             GPS gps,
+            string regionCode,
             string imageName)
         {
             CitizenProfileID = citizenProfileId;
@@ -36,6 +38,7 @@ namespace Domain.Entity
             WasteType = wasteType;
             Description = description;
             GPS = gps;
+            RegionCode = regionCode;
             ImageName = imageName;
             Status = CollectionReportStatus.Pending;
             ReportAt = DateTime.UtcNow;

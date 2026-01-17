@@ -35,6 +35,10 @@ namespace Infrastructure.Migrations
                     CitizenAreaID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     RegionCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    MinLat = table.Column<double>(type: "float", nullable: false),
+                    MaxLat = table.Column<double>(type: "float", nullable: false),
+                    MinLng = table.Column<double>(type: "float", nullable: false),
+                    MaxLng = table.Column<double>(type: "float", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true)
                 },
                 constraints: table =>
@@ -71,6 +75,7 @@ namespace Infrastructure.Migrations
                     ImageName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     ReportAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    RegionCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CitizenProfileID = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
