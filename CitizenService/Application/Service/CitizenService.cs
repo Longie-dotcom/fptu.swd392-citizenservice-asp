@@ -152,16 +152,25 @@ namespace Application.Service
             ValidateOwnership(profile.UserID, callerId, callerRole);
 
             // Logic: convert lat, lng to region code
-            string regionCode = "";
+            
+
+            var area = await unitOfWork
+                .GetRepository<ICitizenAreaRepository>()
+                .GetCitizenAreaByGPS(new GPS(dto.Latitude,dto.Longitude));
+            if (area == null)
+            {
+               throw new CitizenAreaNotFound("The GPS location is out of service area");
+            }
+            string regionCode = area.RegionCode;
 
             // Apply domain
             var report = profile.AddCollectionReport(
-                Guid.NewGuid(),
-                dto.WasteType,
-                dto.Description,
-                new GPS(dto.Latitude, dto.Longitude),
-                regionCode,
-                dto.ImageName);
+                    Guid.NewGuid(),
+                    dto.WasteType,
+                    dto.Description,
+                    new GPS(dto.Latitude, dto.Longitude),
+                    regionCode,
+                    dto.ImageName);
 
             // Apply persistence
             await unitOfWork.BeginTransactionAsync();

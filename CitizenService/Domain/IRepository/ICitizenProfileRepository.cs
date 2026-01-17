@@ -11,6 +11,8 @@ namespace Domain.IRepository
             int pageIndex,
             int pageSize);
 
+        Task<IEnumerable<CollectionReport>> GetCollectionReports();
+
         Task<CitizenProfile?> GetCitizenProfileDetailById(
             Guid citizenProfileId);
 

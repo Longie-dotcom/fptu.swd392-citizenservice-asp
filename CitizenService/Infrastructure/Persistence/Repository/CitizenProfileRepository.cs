@@ -43,6 +43,17 @@ namespace Infrastructure.Persistence.Repository
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<CollectionReport>> GetCollectionReports()
+        {
+            IQueryable<CollectionReport> query = context.CollectionReports
+               .AsNoTracking()
+               .AsQueryable();
+
+            return await query
+                .OrderByDescending(c => c.ReportAt)
+                .ToListAsync();
+        }
+
         public async Task<CitizenProfile?> GetCitizenProfileDetailById(Guid citizenProfileId)
         {
             return await context.CitizenProfiles
