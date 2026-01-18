@@ -70,12 +70,18 @@ namespace Application.DTO
         public string WasteType { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public GPS GPS { get; set; } = new GPS(0, 0);
+        public string RegionCode { get; set; } = string.Empty;
         public string ImageName { get; set; } = string.Empty;
         public CollectionReportStatus Status { get; set; }
         public DateTime ReportAt { get; set; }
         public Guid CitizenProfileID { get; set; }
+    }
 
-        public string? RegionCode { get; set; }
+    public class QueryCollectionReportDTO
+    {
+        public string RegionCode { get; set; } = string.Empty;
+        public string WasteType { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
     }
 
     public class CreateCollectionReportDTO

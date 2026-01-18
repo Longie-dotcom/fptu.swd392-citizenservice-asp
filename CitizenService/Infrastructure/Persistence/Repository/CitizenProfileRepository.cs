@@ -43,17 +43,6 @@ namespace Infrastructure.Persistence.Repository
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<CollectionReport>> GetCollectionReports()
-        {
-            IQueryable<CollectionReport> query = context.CollectionReports
-               .AsNoTracking()
-               .AsQueryable();
-
-            return await query
-                .OrderByDescending(c => c.ReportAt)
-                .ToListAsync();
-        }
-
         public async Task<CitizenProfile?> GetCitizenProfileDetailById(Guid citizenProfileId)
         {
             return await context.CitizenProfiles
@@ -70,6 +59,31 @@ namespace Infrastructure.Persistence.Repository
         {
             return await context.CitizenProfiles.FirstOrDefaultAsync(
                 c => c.UserID == userId);
+        }
+
+        public async Task<IEnumerable<CollectionReport>> GetCollectionReports(
+            string regionCode,
+            string wasteType,
+            string description)
+        {
+            IQueryable<CollectionReport> query = context.CollectionReports
+                .AsNoTracking()
+                .AsQueryable();
+
+            // Apply filters only if they are not null or empty
+            if (!string.IsNullOrEmpty(regionCode))
+                query = query.Where(c => c.RegionCode == regionCode);
+
+            if (!string.IsNullOrEmpty(wasteType))
+                query = query.Where(c => c.WasteType == wasteType);
+
+            if (!string.IsNullOrEmpty(description))
+                query = query.Where(c => c.Description.Contains(description));
+
+            // Order and execute query
+            return await query
+                .OrderByDescending(c => c.ReportAt)
+                .ToListAsync();
         }
 
         public void AddComplaintReport(ComplaintReport complaintReport)

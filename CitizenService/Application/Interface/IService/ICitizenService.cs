@@ -18,6 +18,11 @@ namespace Application.Interface.IService
             Guid callerId,
             string callerRole);
 
+        Task<IEnumerable<CollectionReportDTO>> GetCollectionReports(
+            QueryCollectionReportDTO dto,
+            Guid callerId,
+            string callerRole);
+
         Task CreateCitizenProfile(
             CreateCitizenProfileDTO dto);
 

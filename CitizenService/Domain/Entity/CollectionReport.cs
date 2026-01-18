@@ -14,10 +14,10 @@ namespace Domain.Entity
         public string WasteType { get; private set; }
         public string Description { get; private set; }
         public GPS GPS { get; private set; }
+        public string RegionCode { get; private set; }
         public string ImageName { get; private set; }
         public CollectionReportStatus Status { get; private set; }
         public DateTime ReportAt { get; private set; }
-        public string RegionCode { get; private set; }
 
         public Guid CitizenProfileID { get; private set; }
         #endregion
