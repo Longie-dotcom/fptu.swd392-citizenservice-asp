@@ -1,6 +1,5 @@
 ﻿using Domain.Aggregate;
 using Domain.IRepository;
-using Domain.ValueObject;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.Repository
@@ -18,14 +17,16 @@ namespace Infrastructure.Persistence.Repository
         public CitizenAreaRepository(CitizenDBContext context) : base(context) { }
 
         #region Methods
-        public async Task<CitizenArea?> GetCitizenAreaByGPS(GPS gps)
+        public async Task<CitizenArea?> GetCitizenAreaByGPS(double latitude, double longitude)
         {
             IQueryable<CitizenArea> query = context.CitizenAreas
                .AsNoTracking()
                .AsQueryable();
 
             return await query
-                .Where(l => l.MinLat <= (double)gps.Latitude && l.MaxLat >= (double)gps.Latitude && l.MinLng <= (double)gps.Longitude && l.MaxLng >= (double)gps.Longitude)
+                .Where(
+                l => l.MinLat <= latitude && l.MaxLat >= longitude
+                && l.MinLng <= latitude && l.MaxLng >= longitude)
                 .FirstOrDefaultAsync();
         }
 

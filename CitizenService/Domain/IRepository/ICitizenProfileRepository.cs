@@ -11,13 +11,16 @@ namespace Domain.IRepository
             int pageIndex,
             int pageSize);
 
-        Task<IEnumerable<CollectionReport>> GetCollectionReports();
-
         Task<CitizenProfile?> GetCitizenProfileDetailById(
             Guid citizenProfileId);
 
         Task<CitizenProfile?> GetCitizenProfileByUserId(
             Guid userId);
+
+        Task<IEnumerable<CollectionReport>> GetCollectionReports(
+            string regionCode,
+            string wasteType,
+            string description);
 
         void AddComplaintReport(
             ComplaintReport complaintReport);

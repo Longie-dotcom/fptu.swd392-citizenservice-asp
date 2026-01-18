@@ -11,11 +11,6 @@ using Domain.ValueObject;
 using Google.Protobuf.WellKnownTypes;
 using IAMServer.gRPC;
 using SWD392.MessageBroker;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
-using System;
-using Application.Enum;
-using Application.Interface.IPublisher;
 
 namespace Application.Service
 {
@@ -111,7 +106,25 @@ namespace Application.Service
             return mappedProfile; 
         }
 
-        public async Task CreateCitizenProfile(CreateCitizenProfileDTO dto)
+        public async Task<IEnumerable<CollectionReportDTO>> GetCollectionReports(
+            QueryCollectionReportDTO dto,
+            Guid callerId, 
+            string callerRole)
+        {
+            // Validate collection report list existence
+            var list = await unitOfWork
+                .GetRepository<ICitizenProfileRepository>()
+                .GetCollectionReports(dto.RegionCode, dto.WasteType, dto.Description);
+
+            if (list == null || !list.Any())
+                throw new CollectionReportNotFound(
+                    "Collection report list is empty");
+
+            return mapper.Map<IEnumerable<CollectionReportDTO>>(list);
+        }
+
+        public async Task CreateCitizenProfile(
+            CreateCitizenProfileDTO dto)
         {
             // Create user from IAM Service
             var response = await iAMClient.CreateUser(new CreateUserRequest()
@@ -158,17 +171,14 @@ namespace Application.Service
             // Validate ownership
             ValidateOwnership(profile.UserID, callerId, callerRole);
 
-            // Logic: convert lat, lng to region code
-            
-
+            // Convert latitude and longitude to region code
             var area = await unitOfWork
                 .GetRepository<ICitizenAreaRepository>()
-                .GetCitizenAreaByGPS(new GPS(dto.Latitude,dto.Longitude));
-            if (area == null)
-            {
-               throw new CitizenAreaNotFound("The GPS location is out of service area");
-            }
+                .GetCitizenAreaByGPS((double)dto.Latitude, (double)dto.Longitude);
 
+            if (area == null)
+               throw new CitizenAreaNotFound("The GPS location is out of service area");
+               
             // Apply domain
             var report = profile.AddCollectionReport(
                     Guid.NewGuid(),
@@ -218,8 +228,6 @@ namespace Application.Service
                 .AddComplaintReport(report);
             await unitOfWork.CommitAsync(callerId.ToString());
         }
-
-        // Get all report
 
         public async Task UserSyncDeleting(UserDeleteDTO dto)
         {

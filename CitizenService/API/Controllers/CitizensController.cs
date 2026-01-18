@@ -62,6 +62,19 @@ namespace API.Controllers
             return Ok(profile);
         }
 
+        [AuthorizePrivilege("ViewCollectionReport")]
+        [HttpGet("collection-report")]
+        public async Task<IActionResult> GetCollectionReports(
+            [FromQuery] QueryCollectionReportDTO dto)
+        {
+            var claims = CheckClaimHelper.CheckClaim(User);
+            var collectionReports = await citizenService.GetCollectionReports(
+                dto,
+                claims.userId,
+                claims.role);
+            return Ok(collectionReports);
+        }
+
         [AuthorizePrivilege("ReportComplaint")]
         [HttpPost("report-complaint")]
         public async Task<IActionResult> CreateComplaintReport(
