@@ -22,17 +22,19 @@ namespace Domain.IRepository
             string wasteType,
             string description);
 
+        Task<CollectionReport?> GetCollectionReportById(
+            Guid collectionReportId);
+
         void AddComplaintReport(
             ComplaintReport complaintReport);
 
         void AddCollectionReport(
             CollectionReport collectionReport);
 
-        Task<CollectionReport?> GetCollectionReportById(
-            Guid collectionReportId);
+        void AddRewardHistory(
+            RewardHistory rewardHistory);
 
-        void AddRewardHistory(RewardHistory rewardHistory);
-
-        void UpdateCollectionReport(CollectionReport collection);
+        void UpdateCollectionReport(
+            CollectionReport collection);
     }
 }

@@ -2,7 +2,7 @@
 using Application.Interface.IPublisher;
 using MassTransit;
 
-namespace Infrastructure.MessageBroker.Publisher
+namespace Infrastructure.Messaging.Publisher
 {
     public class SignalRPublisher : ISignalRPublisher
     {

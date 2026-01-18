@@ -4,8 +4,8 @@ using Application.Interface.IPublisher;
 using Domain.IRepository;
 using Infrastructure.Grpc;
 using Infrastructure.InfrastructureException;
-using Infrastructure.MessageBroker.Publisher;
 using Infrastructure.Messaging.Consumer;
+using Infrastructure.Messaging.Publisher;
 using Infrastructure.Persistence.Repository;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
@@ -50,7 +50,6 @@ namespace Infrastructure
                     options.UseSqlServer(connectionString));
 
                 // Register repositories + Unit of Work + Mapper
-
                 services.AddScoped<ICitizenProfileRepository, CitizenProfileRepository>();
                 services.AddScoped<ICitizenAreaRepository, CitizenAreaRepository>();
                 services.AddScoped<IAuditLogRepository, AuditLogRepository>();

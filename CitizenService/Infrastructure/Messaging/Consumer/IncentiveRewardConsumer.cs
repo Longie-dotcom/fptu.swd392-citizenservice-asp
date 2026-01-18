@@ -30,7 +30,5 @@ namespace Infrastructure.Messaging.Consumer
                     Level.Infrastructure, $"Failed when update incentive reward: {ex.Message}");
             }
         }
-
-
     }
 }

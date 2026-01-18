@@ -1,7 +1,8 @@
 ﻿using Application.ApplicationException;
 using Application.DTO;
-using Application.Helper;
+using Application.Enum;
 using Application.Interface.IGrpcClient;
+using Application.Interface.IPublisher;
 using Application.Interface.IService;
 using AutoMapper;
 using Domain.Aggregate;
@@ -253,70 +254,83 @@ namespace Application.Service
 
         public async Task UpdateIncentiveReward(IncentiveRewardDTO dto)
         {
-            var cr = await unitOfWork
+            // Validate collection report existence
+            var collectionReport = await unitOfWork
                 .GetRepository<ICitizenProfileRepository>()
                 .GetCollectionReportById(dto.CollectionReportID);
-            if (cr == null)
+
+            if (collectionReport == null)
                throw new CollectionReportNotFound(
                     $"The collection report with ID: {dto.CollectionReportID} is not found");
             
+            // Validate citizen profile existence
             var profile = await unitOfWork
                 .GetRepository<ICitizenProfileRepository>()
-                .GetByIdAsync(cr.CitizenProfileID);
+                .GetByIdAsync(collectionReport.CitizenProfileID);
+
             if (profile == null)
-            {
                 throw new CitizenProfileNotFound(
-                    $"The citizen profile with ID: {cr.CitizenProfileID} is not found");
-            }
+                    $"The citizen profile with ID: {collectionReport.CitizenProfileID} is not found");
 
-            var ca = await unitOfWork
+            // Validate citizen area existence
+            var citizenArea = await unitOfWork
                 .GetRepository<ICitizenAreaRepository>()
-                .GetByIdAsync(cr.CitizenAreaID);
+                .GetByIdAsync(collectionReport.CitizenAreaID);
 
-            var rewardHistory =  profile.AddRewardHistory(Guid.NewGuid(), cr.CitizenAreaID,dto.Point, dto.Reason);
+            if (citizenArea == null)
+                throw new CitizenAreaNotFound(
+                    $"The citizen area with ID: {collectionReport.CitizenAreaID} is not found");
+
+            // Apply domain
+            var rewardHistory =  profile.AddRewardHistory(
+                collectionReport.CitizenAreaID, 
+                Guid.NewGuid(), 
+                dto.Point, 
+                dto.Reason);
 
             // Apply persistence
             await unitOfWork.BeginTransactionAsync();
-            unitOfWork.GetRepository<ICitizenProfileRepository>().AddRewardHistory(rewardHistory);
-            unitOfWork.GetRepository<ICitizenProfileRepository>().Update(profile.CitizenProfileID, profile);
+            unitOfWork
+                .GetRepository<ICitizenProfileRepository>()
+                .AddRewardHistory(rewardHistory);
+            unitOfWork
+                .GetRepository<ICitizenProfileRepository>()
+                .Update(profile.CitizenProfileID, profile);
             await unitOfWork.CommitAsync();
         }
 
         public async Task UpdateCollectionReportStatus(CollectionReportStatusUpdateDTO dto)
         {
-            var cr = await unitOfWork
+            // Validate collection report existence
+            var collectionReport = await unitOfWork
                 .GetRepository<ICitizenProfileRepository>()
                 .GetCollectionReportById(dto.CollectionReportID);
 
-            if (cr == null)
-            {
+            if (collectionReport == null)
                 throw new CollectionReportNotFound(
-                   $"The collection report with ID: {dto.CollectionReportID} is not found");
-            }
+                    $"The collection report with ID: {dto.CollectionReportID} is not found");
 
-            if (string.IsNullOrWhiteSpace(dto.Status))
-            {
-                throw new Exception("The status is invalid");
-            }
-
+            // Validate status enum
             if (!System.Enum.TryParse<CollectionReportStatus>(dto.Status, true, out var status))
-            {
-                throw new Exception($"Invalid collection report status: {dto.Status}");
-            }
+                throw new Exception(
+                    $"Invalid collection report status: {dto.Status}");
 
-            cr.UpdateStatus(status);
+            // Apply domain
+            collectionReport.UpdateStatus(status);
 
-            // persist change
+            // Apply persistence
             await unitOfWork.BeginTransactionAsync();
-            unitOfWork.GetRepository<ICitizenProfileRepository>().UpdateCollectionReport(cr);
+            unitOfWork
+                .GetRepository<ICitizenProfileRepository>()
+                .UpdateCollectionReport(collectionReport);
             await unitOfWork.CommitAsync();
 
-            // Notify citizen via SignalR   
+            // Notify via SignalR   
             await signalRPublisher.PublishEnvelop(
                 new SignalREnvelope.SignalREnvelope
                 {
                     Method = "UpdateStatus",
-                    Payload = mapper.Map<CollectionReportDTO>(cr),
+                    Payload = mapper.Map<CollectionReportDTO>(collectionReport),
                     Timestamp = DateTime.UtcNow,
                     SourceService = "CITIZEN_SERVICE"
                 });

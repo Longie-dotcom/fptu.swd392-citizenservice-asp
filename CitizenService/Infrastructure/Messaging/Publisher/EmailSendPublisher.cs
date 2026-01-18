@@ -3,7 +3,7 @@ using Application.Interface.IPublisher;
 using MassTransit;
 using SWD392.MessageBroker;
 
-namespace Infrastructure.MessageBroker.Publisher
+namespace Infrastructure.Messaging.Publisher
 {
     public class EmailSendPublisher : IEmailSendPublisher
     {

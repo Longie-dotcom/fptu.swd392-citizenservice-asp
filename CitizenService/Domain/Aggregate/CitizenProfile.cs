@@ -137,24 +137,28 @@ namespace Domain.Aggregate
         }
 
         public RewardHistory AddRewardHistory(
-            Guid rewardHistoryId,
             Guid citizenAreaId,
-            int points,
+            Guid rewardHistoryId,
+            int point,
             string reason)
         {
             if (!IsActive)
                 throw new CitizenProfileAggregateException(
                     "Inactive citizen cannot receive rewards");
+
             var rewardHistory = new RewardHistory(
                 CitizenProfileID,
-                rewardHistoryId,
                 citizenAreaId,
-                points,
+                rewardHistoryId,
+                point,
                 reason
             );
-            rewardHistories.Add(rewardHistory);
+
             // Update point balance
-            PointBalance += points;
+            PointBalance += point;
+            rewardHistories.Add(rewardHistory);
+
+            // Return for persistence
             return rewardHistory;
         }
 

@@ -20,7 +20,6 @@ namespace Domain.Entity
         public DateTime ReportAt { get; private set; }
 
         public Guid CitizenProfileID { get; private set; }
-
         public Guid CitizenAreaID { get; private set; }
         public CitizenArea CitizenArea { get; private set; }
         #endregion
