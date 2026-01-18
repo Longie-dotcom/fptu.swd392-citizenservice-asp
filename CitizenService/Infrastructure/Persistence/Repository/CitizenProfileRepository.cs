@@ -81,6 +81,23 @@ namespace Infrastructure.Persistence.Repository
         {
             context.CollectionReports.Add(collectionReport);
         }
+
+        public async Task<CollectionReport?> GetCollectionReportById(
+            Guid collectionReportId)
+        {
+            return await context.CollectionReports
+                .FirstOrDefaultAsync(c => c.CollectionReportID == collectionReportId);
+        }
+
+        public void AddRewardHistory(RewardHistory rewardHistory) { 
+            context.RewardHistories.Add(rewardHistory);
+
+        }
+
+        public void UpdateCollectionReport(CollectionReport collection)
+        {
+            context.CollectionReports.Update(collection);
+        }   
         #endregion
     }
 }

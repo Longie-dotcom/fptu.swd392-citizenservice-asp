@@ -17,9 +17,11 @@ namespace Domain.Entity
         public string ImageName { get; private set; }
         public CollectionReportStatus Status { get; private set; }
         public DateTime ReportAt { get; private set; }
-        public string RegionCode { get; private set; }
 
         public Guid CitizenProfileID { get; private set; }
+
+        public Guid CitizenAreaID { get; private set; }
+        public CitizenArea CitizenArea { get; private set; }
         #endregion
 
         protected CollectionReport() { }
@@ -30,7 +32,7 @@ namespace Domain.Entity
             string wasteType, 
             string description, 
             GPS gps,
-            string regionCode,
+            Guid citizenAreaId,
             string imageName)
         {
             CitizenProfileID = citizenProfileId;
@@ -38,13 +40,17 @@ namespace Domain.Entity
             WasteType = wasteType;
             Description = description;
             GPS = gps;
-            RegionCode = regionCode;
+            CitizenAreaID = citizenAreaId;
             ImageName = imageName;
             Status = CollectionReportStatus.Pending;
             ReportAt = DateTime.UtcNow;
         }
 
         #region Methods
+        public void UpdateStatus(CollectionReportStatus status)
+        {
+            Status = status;
+        }
         #endregion
     }
 }

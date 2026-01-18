@@ -101,7 +101,7 @@ namespace Domain.Aggregate
             string wasteType,
             string description,
             GPS gps,
-            string regionCode,
+            Guid citizenAreaID,
             string imageName)
         {
             if (!IsActive)
@@ -120,17 +120,13 @@ namespace Domain.Aggregate
                 throw new CitizenProfileAggregateException(
                     "Collection description is required");
 
-            if (string.IsNullOrWhiteSpace(regionCode))
-                throw new CitizenProfileAggregateException(
-                    "Region code is required");
-
             var report = new CollectionReport(
                 CitizenProfileID,
                 collectionReportId,
                 wasteType,
                 description,
                 gps,
-                regionCode,
+                citizenAreaID,
                 imageName
             );
 
@@ -138,6 +134,28 @@ namespace Domain.Aggregate
 
             // Return for persistence
             return report;
+        }
+
+        public RewardHistory AddRewardHistory(
+            Guid rewardHistoryId,
+            Guid citizenAreaId,
+            int points,
+            string reason)
+        {
+            if (!IsActive)
+                throw new CitizenProfileAggregateException(
+                    "Inactive citizen cannot receive rewards");
+            var rewardHistory = new RewardHistory(
+                CitizenProfileID,
+                rewardHistoryId,
+                citizenAreaId,
+                points,
+                reason
+            );
+            rewardHistories.Add(rewardHistory);
+            // Update point balance
+            PointBalance += points;
+            return rewardHistory;
         }
 
         public void Inactivate()

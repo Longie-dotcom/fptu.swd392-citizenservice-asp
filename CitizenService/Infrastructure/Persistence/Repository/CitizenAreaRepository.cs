@@ -28,6 +28,16 @@ namespace Infrastructure.Persistence.Repository
                 .Where(l => l.MinLat <= (double)gps.Latitude && l.MaxLat >= (double)gps.Latitude && l.MinLng <= (double)gps.Longitude && l.MaxLng >= (double)gps.Longitude)
                 .FirstOrDefaultAsync();
         }
+
+        public async Task<CitizenArea?> GetCitizenAreaByRegionCode(string regionCode)
+        {
+            IQueryable<CitizenArea> query = context.CitizenAreas
+               .AsNoTracking()
+               .AsQueryable();
+            return await query
+                .Where(l => l.RegionCode == regionCode)
+                .FirstOrDefaultAsync();
+        }
         #endregion
     }
 }

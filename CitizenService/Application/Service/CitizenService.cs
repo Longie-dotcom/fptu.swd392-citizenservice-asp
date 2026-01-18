@@ -1,11 +1,11 @@
 ﻿using Application.ApplicationException;
 using Application.DTO;
-using Application.Enum;
 using Application.Helper;
 using Application.Interface.IGrpcClient;
 using Application.Interface.IService;
 using AutoMapper;
 using Domain.Aggregate;
+using Domain.Enum;
 using Domain.IRepository;
 using Domain.ValueObject;
 using Google.Protobuf.WellKnownTypes;
@@ -13,6 +13,9 @@ using IAMServer.gRPC;
 using SWD392.MessageBroker;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using System;
+using Application.Enum;
+using Application.Interface.IPublisher;
 
 namespace Application.Service
 {
@@ -21,15 +24,19 @@ namespace Application.Service
         private readonly IIAMClient iAMClient;
         private readonly IUnitOfWork unitOfWork;
         private readonly IMapper mapper;
+        private readonly ISignalRPublisher signalRPublisher;
 
         public CitizenService(
             IIAMClient iAMClient,
             IUnitOfWork unitOfWork,
-            IMapper mapper)
+            IMapper mapper,
+            ISignalRPublisher signalRPublisher
+            )
         {
             this.iAMClient = iAMClient;
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
+            this.signalRPublisher = signalRPublisher;
         }
 
         #region Methods
@@ -161,7 +168,6 @@ namespace Application.Service
             {
                throw new CitizenAreaNotFound("The GPS location is out of service area");
             }
-            string regionCode = area.RegionCode;
 
             // Apply domain
             var report = profile.AddCollectionReport(
@@ -169,7 +175,7 @@ namespace Application.Service
                     dto.WasteType,
                     dto.Description,
                     new GPS(dto.Latitude, dto.Longitude),
-                    regionCode,
+                    area.CitizenAreaID,
                     dto.ImageName);
 
             // Apply persistence
@@ -235,6 +241,77 @@ namespace Application.Service
                 .GetRepository<ICitizenProfileRepository>()
                 .Update(profile.CitizenProfileID, profile);
             await unitOfWork.CommitAsync();
+        }
+
+        public async Task UpdateIncentiveReward(IncentiveRewardDTO dto)
+        {
+            var cr = await unitOfWork
+                .GetRepository<ICitizenProfileRepository>()
+                .GetCollectionReportById(dto.CollectionReportID);
+            if (cr == null)
+               throw new CollectionReportNotFound(
+                    $"The collection report with ID: {dto.CollectionReportID} is not found");
+            
+            var profile = await unitOfWork
+                .GetRepository<ICitizenProfileRepository>()
+                .GetByIdAsync(cr.CitizenProfileID);
+            if (profile == null)
+            {
+                throw new CitizenProfileNotFound(
+                    $"The citizen profile with ID: {cr.CitizenProfileID} is not found");
+            }
+
+            var ca = await unitOfWork
+                .GetRepository<ICitizenAreaRepository>()
+                .GetByIdAsync(cr.CitizenAreaID);
+
+            var rewardHistory =  profile.AddRewardHistory(Guid.NewGuid(), cr.CitizenAreaID,dto.Point, dto.Reason);
+
+            // Apply persistence
+            await unitOfWork.BeginTransactionAsync();
+            unitOfWork.GetRepository<ICitizenProfileRepository>().AddRewardHistory(rewardHistory);
+            unitOfWork.GetRepository<ICitizenProfileRepository>().Update(profile.CitizenProfileID, profile);
+            await unitOfWork.CommitAsync();
+        }
+
+        public async Task UpdateCollectionReportStatus(CollectionReportStatusUpdateDTO dto)
+        {
+            var cr = await unitOfWork
+                .GetRepository<ICitizenProfileRepository>()
+                .GetCollectionReportById(dto.CollectionReportID);
+
+            if (cr == null)
+            {
+                throw new CollectionReportNotFound(
+                   $"The collection report with ID: {dto.CollectionReportID} is not found");
+            }
+
+            if (string.IsNullOrWhiteSpace(dto.Status))
+            {
+                throw new Exception("The status is invalid");
+            }
+
+            if (!System.Enum.TryParse<CollectionReportStatus>(dto.Status, true, out var status))
+            {
+                throw new Exception($"Invalid collection report status: {dto.Status}");
+            }
+
+            cr.UpdateStatus(status);
+
+            // persist change
+            await unitOfWork.BeginTransactionAsync();
+            unitOfWork.GetRepository<ICitizenProfileRepository>().UpdateCollectionReport(cr);
+            await unitOfWork.CommitAsync();
+
+            // Notify citizen via SignalR   
+            await signalRPublisher.PublishEnvelop(
+                new SignalREnvelope.SignalREnvelope
+                {
+                    Method = "UpdateStatus",
+                    Payload = mapper.Map<CollectionReportDTO>(cr),
+                    Timestamp = DateTime.UtcNow,
+                    SourceService = "CITIZEN_SERVICE"
+                });
         }
         #endregion
 

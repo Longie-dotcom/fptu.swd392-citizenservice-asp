@@ -24,5 +24,12 @@ namespace Domain.IRepository
 
         void AddCollectionReport(
             CollectionReport collectionReport);
+
+        Task<CollectionReport?> GetCollectionReportById(
+            Guid collectionReportId);
+
+        void AddRewardHistory(RewardHistory rewardHistory);
+
+        void UpdateCollectionReport(CollectionReport collection);
     }
 }

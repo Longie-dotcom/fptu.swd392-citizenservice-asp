@@ -80,7 +80,9 @@ namespace Infrastructure
                 {
                     // Add all consumers for this service
                     x.AddConsumer<UserDeleteConsumer>();
-
+                    x.AddConsumer<IncentiveRewardConsumer>();
+                    x.AddConsumer<CollectionReportStatusUpdateConsumer>();
+    
                     x.UsingRabbitMq((context, cfg) =>
                     {
                         var rabbitHost = Environment.GetEnvironmentVariable("RABBITMQ_HOST");
@@ -106,6 +108,16 @@ namespace Infrastructure
                         cfg.ReceiveEndpoint("citizen_delete_consumer", e =>
                         {
                             e.ConfigureConsumer<UserDeleteConsumer>(context);
+                        });
+
+                        cfg.ReceiveEndpoint("collection_report_status_update_consumer", e =>
+                        {
+                            e.ConfigureConsumer<CollectionReportStatusUpdateConsumer>(context);
+                        });
+
+                        cfg.ReceiveEndpoint("incentive_reward_consumer", e =>
+                        {
+                            e.ConfigureConsumer<IncentiveRewardConsumer>(context);
                         });
                     });
                 });
