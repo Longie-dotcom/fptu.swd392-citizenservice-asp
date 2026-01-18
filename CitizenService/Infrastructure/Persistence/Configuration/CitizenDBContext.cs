@@ -78,8 +78,11 @@ public class CitizenDBContext : DbContext
             entity.Property(r => r.ImageName);
             entity.Property(r => r.Status).IsRequired();
             entity.Property(r => r.ReportAt).IsRequired();
-            entity.Property(r => r.RegionCode).IsRequired();
             entity.OwnsOne(r => r.GPS);
+            entity.HasOne(r => r.CitizenArea)
+                  .WithMany()
+                  .HasForeignKey(r => r.CitizenAreaID)
+                  .OnDelete(DeleteBehavior.Restrict);
         });
 
         // --------------------
@@ -113,7 +116,6 @@ public class CitizenDBContext : DbContext
 
             entity.Property(r => r.CitizenProfileID).IsRequired();
             entity.Property(r => r.CitizenAreaID).IsRequired();
-
             entity.Property(r => r.Point).IsRequired();
             entity.Property(r => r.Reason).IsRequired();
             entity.Property(r => r.OccurredAt).IsRequired();
@@ -122,6 +124,7 @@ public class CitizenDBContext : DbContext
                   .WithMany()
                   .HasForeignKey(r => r.CitizenAreaID)
                   .OnDelete(DeleteBehavior.Restrict);
+
         });
 
         // --------------------

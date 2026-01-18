@@ -29,6 +29,16 @@ namespace Infrastructure.Persistence.Repository
                 && l.MinLng <= latitude && l.MaxLng >= longitude)
                 .FirstOrDefaultAsync();
         }
+
+        public async Task<CitizenArea?> GetCitizenAreaByRegionCode(string regionCode)
+        {
+            IQueryable<CitizenArea> query = context.CitizenAreas
+               .AsNoTracking()
+               .AsQueryable();
+            return await query
+                .Where(l => l.RegionCode == regionCode)
+                .FirstOrDefaultAsync();
+        }
         #endregion
     }
 }

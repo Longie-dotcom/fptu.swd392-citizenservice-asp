@@ -2,6 +2,8 @@
 {
     public class CollectionReportNotFound : Exception
     {
-        public CollectionReportNotFound(string message) : base(message) { }
+        public CollectionReportNotFound(string message) : base(message)
+        {
+        }
     }
 }

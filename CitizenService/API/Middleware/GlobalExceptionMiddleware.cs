@@ -52,7 +52,7 @@ namespace API.Middleware
                 // Not Found Exceptions - 404 Not Found
                 case
                 CitizenProfileNotFound or
-                CitizenAreaNotFound or
+                CitizenAreaNotFound or 
                 CollectionReportNotFound:
                     ServiceLogger.Warning(
                         Level.API, $"Resource not found: {exception.GetType().Name}, detail: {exception.Message}");

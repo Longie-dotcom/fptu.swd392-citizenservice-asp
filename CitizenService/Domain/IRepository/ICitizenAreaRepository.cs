@@ -5,6 +5,7 @@ namespace Domain.IRepository
         IGenericRepository<CitizenArea>, 
         IRepositoryBase
     {
-         Task<CitizenArea?> GetCitizenAreaByGPS(double latitude, double longitude);
+        Task<CitizenArea?> GetCitizenAreaByGPS(GPS gps);
+        Task<CitizenArea?> GetCitizenAreaByRegionCode(string regionCode);
     }
 }
