@@ -24,9 +24,7 @@ namespace Infrastructure.Persistence.Repository
                .AsQueryable();
 
             return await query
-                .Where(
-                l => l.MinLat <= latitude && l.MaxLat >= longitude
-                && l.MinLng <= latitude && l.MaxLng >= longitude)
+                .Where(l => l.MinLat <= latitude && l.MaxLat >= longitude && l.MinLng <= latitude && l.MaxLng >= longitude)
                 .FirstOrDefaultAsync();
         }
 
@@ -35,6 +33,7 @@ namespace Infrastructure.Persistence.Repository
             IQueryable<CitizenArea> query = context.CitizenAreas
                .AsNoTracking()
                .AsQueryable();
+
             return await query
                 .Where(l => l.RegionCode == regionCode)
                 .FirstOrDefaultAsync();
