@@ -44,5 +44,18 @@ namespace Application.Interface.IService
 
         Task UpdateCollectionReportStatus(
             SWD392.MessageBroker.CollectionReportStatusUpdateDTO dto);
+
+        Task<IEnumerable<ComplaintReportDTO>> GetComplaintReports(
+            QueryComplaintReportDTO dto,
+            Guid callerId,
+            string callerRole);
+
+        Task ResolveComplaintReport(
+            UpdateComplaintReportDTO dto,
+            Guid callerId,
+            string callerRole);
+
+        Task<IEnumerable<LeaderboardEntryDTO>> GetLeaderboard(
+            QueryLeaderboardDTO dto);
     }
 }

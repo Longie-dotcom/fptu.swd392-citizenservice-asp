@@ -299,6 +299,83 @@ namespace Application.Service
             await unitOfWork.CommitAsync();
         }
 
+        public async Task<IEnumerable<ComplaintReportDTO>> GetComplaintReports(
+            QueryComplaintReportDTO dto,
+            Guid callerId,
+            string callerRole)
+        {
+            // Validate authorization
+            ValidateAuthorization(callerRole);
+
+            // Validate complaint report list existence
+            var list = await unitOfWork
+                .GetRepository<ICitizenProfileRepository>()
+                .GetComplaintReports(dto.Status);
+
+            if (list == null || !list.Any())
+                throw new ComplaintReportNotFound(
+                    "Complaint report list is empty");
+
+            return mapper.Map<IEnumerable<ComplaintReportDTO>>(list);
+        }
+
+        public async Task ResolveComplaintReport(
+            UpdateComplaintReportDTO dto,
+            Guid callerId,
+            string callerRole)
+        {
+            // Validate authorization
+            ValidateAuthorization(callerRole);
+
+            // Validate complaint report existence
+            var complaintReport = await unitOfWork
+                .GetRepository<ICitizenProfileRepository>()
+                .GetComplaintReportById(dto.ComplaintReportId);
+
+            if (complaintReport == null)
+                throw new ComplaintReportNotFound(
+                    $"The complaint report with ID: {dto.ComplaintReportId} is not found");
+
+            // Apply domain
+            complaintReport.UpdateStatus(dto.Status);
+
+            // Apply persistence
+            await unitOfWork.BeginTransactionAsync();
+            unitOfWork
+                .GetRepository<ICitizenProfileRepository>()
+                .UpdateComplaintReport(complaintReport);
+            await unitOfWork.CommitAsync(callerId.ToString());
+        }
+
+        public async Task<IEnumerable<LeaderboardEntryDTO>> GetLeaderboard(
+            QueryLeaderboardDTO dto)
+        {
+            // Validate citizen area existence
+            var area = await unitOfWork
+                .GetRepository<ICitizenAreaRepository>()
+                .GetByIdAsync(dto.CitizenAreaId);
+
+            if (area == null)
+                throw new CitizenAreaNotFound(
+                    $"The citizen area with ID: {dto.CitizenAreaId} is not found");
+
+            // Fetch ranked results
+            var results = await unitOfWork
+                .GetRepository<ICitizenProfileRepository>()
+                .GetLeaderboard(dto.CitizenAreaId);
+
+            // Manual projection with rank (no AutoMapper - computed result)
+            int rank = 1;
+            return results.Select(r => new LeaderboardEntryDTO
+            {
+                Rank = rank++,
+                CitizenProfileID = r.CitizenProfileID,
+                DisplayName = r.DisplayName,
+                AvatarName = r.AvatarName,
+                TotalPoints = r.TotalPoints
+            }).ToList();
+        }
+
         public async Task UpdateCollectionReportStatus(CollectionReportStatusUpdateDTO dto)
         {
             // Validate collection report existence
