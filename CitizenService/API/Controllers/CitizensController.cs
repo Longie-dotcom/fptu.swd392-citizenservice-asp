@@ -100,6 +100,46 @@ namespace API.Controllers
                 claims.role);
             return Ok("Report collection successfully.");
         }
+
+        // UC07 - View Complaint Reports (Admin only)
+        [AuthorizePrivilege("ViewComplaintReport")]
+        [HttpGet("complaint-report")]
+        public async Task<IActionResult> GetComplaintReports(
+            [FromQuery] QueryComplaintReportDTO dto)
+        {
+            var claims = CheckClaimHelper.CheckClaim(User);
+            var complaintReports = await citizenService.GetComplaintReports(
+                dto,
+                claims.userId,
+                claims.role);
+            return Ok(complaintReports);
+        }
+
+        // UC07 - Resolve Complaint Report (Admin only)
+        [AuthorizePrivilege("ResolveComplaintReport")]
+        [HttpPatch("complaint-report/{complaintReportId:guid}/resolve")]
+        public async Task<IActionResult> ResolveComplaintReport(
+            Guid complaintReportId,
+            [FromBody] UpdateComplaintReportDTO dto)
+        {
+            dto.ComplaintReportId = complaintReportId;
+            var claims = CheckClaimHelper.CheckClaim(User);
+            await citizenService.ResolveComplaintReport(
+                dto,
+                claims.userId,
+                claims.role);
+            return Ok("Complaint report resolved successfully.");
+        }
+
+        // UC08 - View Area Leaderboard (Public)
+        [AllowAnonymous]
+        [HttpGet("leaderboard")]
+        public async Task<IActionResult> GetLeaderboard(
+            [FromQuery] QueryLeaderboardDTO dto)
+        {
+            var result = await citizenService.GetLeaderboard(dto);
+            return Ok(result);
+        }
         #endregion
     }
 }

@@ -116,6 +116,33 @@ namespace Application.DTO
         public string ImageName { get; set; } = string.Empty;
     }
 
+    // UC07 - Complaint Report Queries
+    public class QueryComplaintReportDTO
+    {
+        public ComplaintReportStatus? Status { get; set; }
+    }
+
+    public class UpdateComplaintReportDTO
+    {
+        public Guid ComplaintReportId { get; set; }
+        public ComplaintReportStatus Status { get; set; }
+    }
+
+    // UC08 - Leaderboard
+    public class QueryLeaderboardDTO
+    {
+        public Guid CitizenAreaId { get; set; }
+    }
+
+    public class LeaderboardEntryDTO
+    {
+        public int Rank { get; set; }
+        public Guid CitizenProfileID { get; set; }
+        public string DisplayName { get; set; } = string.Empty;
+        public string AvatarName { get; set; } = string.Empty;
+        public int TotalPoints { get; set; }
+    }
+
     // Reward History
     public class RewardHistoryDTO
     {
