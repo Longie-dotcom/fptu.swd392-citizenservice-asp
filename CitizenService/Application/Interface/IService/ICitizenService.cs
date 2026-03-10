@@ -4,10 +4,6 @@ namespace Application.Interface.IService
 {
     public interface ICitizenService
     {
-        Task<IEnumerable<CitizenAreaDTO>> GetCitizenAreas(
-            Guid callerId,
-            string callerRole);
-
         Task<IEnumerable<CitizenProfileDTO>> GetCitizenProfiles(
             QueryCitizenProfileDTO dto,
             Guid callerId,
@@ -15,6 +11,15 @@ namespace Application.Interface.IService
 
         Task<CitizenProfileDetailDTO> GetCitizenProfileDetail(
             Guid citizenProfileId,
+            Guid callerId,
+            string callerRole);
+
+        Task<CitizenProfileDetailDTO> GetMyCitizenProfile(
+            Guid callerId,
+            string callerRole,
+            QueryMyCitizenProfileDTO dto);
+
+        Task<IEnumerable<CitizenAreaDTO>> GetCitizenAreas(
             Guid callerId,
             string callerRole);
 

@@ -19,24 +19,12 @@ namespace Infrastructure.Persistence.Repository
         #region Methods
         public async Task<CitizenArea?> GetCitizenAreaByGPS(double latitude, double longitude)
         {
-            IQueryable<CitizenArea> query = context.CitizenAreas
-               .AsNoTracking()
-               .AsQueryable();
-
-            return await query
-                .Where(l => l.MinLat <= latitude && l.MaxLat >= longitude && l.MinLng <= latitude && l.MaxLng >= longitude)
-                .FirstOrDefaultAsync();
-        }
-
-        public async Task<CitizenArea?> GetCitizenAreaByRegionCode(string regionCode)
-        {
-            IQueryable<CitizenArea> query = context.CitizenAreas
-               .AsNoTracking()
-               .AsQueryable();
-
-            return await query
-                .Where(l => l.RegionCode == regionCode)
-                .FirstOrDefaultAsync();
+            return await context.CitizenAreas
+                .AsNoTracking()
+                .FirstOrDefaultAsync(a =>
+                    a.MinLat <= latitude && latitude <= a.MaxLat &&
+                    a.MinLng <= longitude && longitude <= a.MaxLng
+                );
         }
         #endregion
     }

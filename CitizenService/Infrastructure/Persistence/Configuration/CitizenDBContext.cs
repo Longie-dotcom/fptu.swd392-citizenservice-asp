@@ -92,6 +92,7 @@ public class CitizenDBContext : DbContext
         {
             entity.HasKey(r => r.ComplaintReportID);
 
+            entity.Property(r => r.CollectionReportID).IsRequired();
             entity.Property(r => r.CitizenProfileID).IsRequired();
             entity.Property(r => r.CitizenAreaID).IsRequired();
 

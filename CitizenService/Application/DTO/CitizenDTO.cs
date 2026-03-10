@@ -9,6 +9,10 @@ namespace Application.DTO
         public Guid CitizenAreaID { get; set; }
         public string Name { get; set; } = string.Empty;
         public string RegionCode { get; set; } = string.Empty;
+        public double MinLat { get; set; }
+        public double MaxLat { get; set; }
+        public double MinLng { get; set; }
+        public double MaxLng { get; set; }
         public bool IsActive { get; set; }
     }
 
@@ -44,10 +48,20 @@ namespace Application.DTO
         public bool IsActive { get; set; }
     }
 
+    public class QueryMyCitizenProfileDTO
+    {
+        public int? CollectionReportPageIndex { get; set; }
+        public int? CollectionReportPageSize { get; set; }
+        public int? ComplaintReportPageIndex { get; set; }
+        public int? ComplaintReportPageSize { get; set; }
+        public int? RewardHistoryPageIndex { get; set; }
+        public int? RewardHistoryPageSize { get; set; }
+    }
+
     public class QueryCitizenProfileDTO
     {
-        public string DisplayName { get; set; } = string.Empty;
-        public int PageIndex { get; set; } = 0;
+        public string? DisplayName { get; set; } = string.Empty;
+        public int PageIndex { get; set; } = 1;
         public int PageSize { get; set; } = 1;
     }
 
@@ -66,6 +80,7 @@ namespace Application.DTO
     // Collection Report
     public class CollectionReportDTO
     {
+        public string CitizenName { get; set; } = string.Empty; // Extra field
         public Guid CollectionReportID { get; set; }
         public string WasteType { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
@@ -79,14 +94,13 @@ namespace Application.DTO
 
     public class QueryCollectionReportDTO
     {
-        public string RegionCode { get; set; } = string.Empty;
-        public string WasteType { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
+        public string? RegionCode { get; set; } = string.Empty;
+        public string? WasteType { get; set; } = string.Empty;
+        public string? Description { get; set; } = string.Empty;
     }
 
     public class CreateCollectionReportDTO
     {
-        public Guid CitizenProfileId { get; set; }
         public string WasteType { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public decimal Latitude { get; set; }
@@ -103,14 +117,14 @@ namespace Application.DTO
         public string ImageName { get; set; } = string.Empty;
         public ComplaintReportStatus Status { get; set; }
         public DateTime ReportAt { get; set; }
+        public Guid CollectionReportID { get; set; }
         public Guid CitizenProfileID { get; set; }
         public CitizenAreaDTO CitizenArea { get; set; } = new CitizenAreaDTO();
     }
 
     public class CreateComplaintReportDTO
     {
-        public Guid CitizenAreaId { get; set; }
-        public Guid CitizenProfileId { get; set; }
+        public Guid CollectionReportID { get; set; }
         public string Description { get; set; } = string.Empty;
         public string Title { get; set; } = string.Empty;
         public string ImageName { get; set; } = string.Empty;

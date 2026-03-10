@@ -1,6 +1,7 @@
 ﻿using Domain.Aggregate;
 using Domain.Entity;
 using Domain.IRepository;
+using Domain.DTO;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.Repository
@@ -19,7 +20,7 @@ namespace Infrastructure.Persistence.Repository
 
         #region Methods
         public async Task<IEnumerable<CitizenProfile>> GetCitizenProfiles(
-            string displayName,
+            string? displayName,
             int pageIndex,
             int pageSize)
         {
@@ -57,22 +58,23 @@ namespace Infrastructure.Persistence.Repository
         public async Task<CitizenProfile?> GetCitizenProfileByUserId(
             Guid userId)
         {
-            return await context.CitizenProfiles.FirstOrDefaultAsync(
-                c => c.UserID == userId);
+            return await context.CitizenProfiles
+                .Include(c => c.CollectionReports)
+                .Include(c => c.ComplaintReports)
+                    .ThenInclude(cr => cr.CitizenArea)
+                .Include(c => c.RewardHistories)
+                    .ThenInclude(cr => cr.CitizenArea)
+                .FirstOrDefaultAsync(c => c.UserID == userId);
         }
 
-        public async Task<IEnumerable<CollectionReport>> GetCollectionReports(
-            string regionCode,
-            string wasteType,
-            string description)
+        public async Task<IEnumerable<CollectionReportDTO>> GetCollectionReports(
+            string? regionCode,
+            string? wasteType,
+            string? description)
         {
-            IQueryable<CollectionReport> query = context.CollectionReports
+            var query = context.CollectionReports
                 .AsNoTracking()
                 .AsQueryable();
-
-            // Apply filters only if they are not null or empty
-            if (!string.IsNullOrEmpty(regionCode))
-                query = query.Where(c => c.RegionCode == regionCode);
 
             if (!string.IsNullOrEmpty(wasteType))
                 query = query.Where(c => c.WasteType == wasteType);
@@ -80,10 +82,22 @@ namespace Infrastructure.Persistence.Repository
             if (!string.IsNullOrEmpty(description))
                 query = query.Where(c => c.Description.Contains(description));
 
-            // Order and execute query
-            return await query
-                .OrderByDescending(c => c.ReportAt)
+            if (!string.IsNullOrEmpty(regionCode))
+                query = query.Where(c => c.CitizenArea.RegionCode == regionCode);
+
+            var result = await query
+                .Join(context.CitizenProfiles,
+                    report => report.CitizenProfileID,
+                    citizen => citizen.CitizenProfileID,
+                    (report, citizen) => new CollectionReportDTO
+                    {
+                        CollectionReport = report,
+                        CitizenName = citizen.DisplayName
+                    })
+                .OrderByDescending(x => x.CollectionReport.ReportAt)
                 .ToListAsync();
+
+            return result;
         }
 
         public async Task<CollectionReport?> GetCollectionReportById(

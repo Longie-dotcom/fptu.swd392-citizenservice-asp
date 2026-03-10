@@ -59,6 +59,7 @@ namespace Domain.Aggregate
 
         #region Methods
         public ComplaintReport AddComplaintReport(
+            Guid collectionReportId,
             Guid citizenAreaId,
             Guid complaintReportId,
             string description,
@@ -82,6 +83,7 @@ namespace Domain.Aggregate
                     "Complaint description is required");
 
             var report = new ComplaintReport(
+                collectionReportId,
                 CitizenProfileID,
                 citizenAreaId,
                 complaintReportId,

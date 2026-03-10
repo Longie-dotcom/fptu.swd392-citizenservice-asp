@@ -36,22 +36,6 @@ namespace Application.Service
         }
 
         #region Methods
-        public async Task<IEnumerable<CitizenAreaDTO>> GetCitizenAreas(
-            Guid callerId,
-            string callerRole)
-        {
-            // Validate citizen area list existence
-            var list = await unitOfWork
-                .GetRepository<ICitizenAreaRepository>()
-                .GetAllAsync();
-
-            if (list == null || !list.Any())
-                throw new CitizenAreaNotFound(
-                    "Citizen area list is empty");
-
-            return mapper.Map<IEnumerable<CitizenAreaDTO>>(list);
-        }
-
         public async Task<IEnumerable<CitizenProfileDTO>> GetCitizenProfiles(
             QueryCitizenProfileDTO dto,
             Guid callerId,
@@ -107,6 +91,79 @@ namespace Application.Service
             return mappedProfile; 
         }
 
+        public async Task<CitizenProfileDetailDTO> GetMyCitizenProfile(
+            Guid callerId,
+            string callerRole,
+            QueryMyCitizenProfileDTO dto)
+        {
+            var profile = await unitOfWork
+                .GetRepository<ICitizenProfileRepository>()
+                .GetCitizenProfileByUserId(callerId);
+
+            if (profile == null)
+                throw new CitizenProfileNotFound(
+                    $"The citizen profile with user ID: {callerId} is not found");
+
+            ValidateOwnership(profile.UserID, callerId, callerRole);
+
+            var response = await iAMClient.GetUser(new GetUserRequest()
+            {
+                CreatedBy = callerId.ToString(),
+                Role = callerRole,
+                UserId = profile.UserID.ToString()
+            });
+
+            var mappedProfile = mapper.Map<CitizenProfileDetailDTO>(profile);
+
+            mappedProfile.Email = response.Email;
+            mappedProfile.FullName = response.FullName;
+            mappedProfile.Gender = response.Gender;
+            mappedProfile.Dob = response.Dob.ToDateTime();
+
+            // Apply paging on DTO
+            if (dto.CollectionReportPageIndex.HasValue && dto.CollectionReportPageSize.HasValue)
+            {
+                mappedProfile.CollectionReports = mappedProfile.CollectionReports
+                    .Skip(dto.CollectionReportPageIndex.Value * dto.CollectionReportPageSize.Value)
+                    .Take(dto.CollectionReportPageSize.Value)
+                    .ToList();
+            }
+
+            if (dto.ComplaintReportPageIndex.HasValue && dto.ComplaintReportPageSize.HasValue)
+            {
+                mappedProfile.ComplaintReports = mappedProfile.ComplaintReports
+                    .Skip(dto.ComplaintReportPageIndex.Value * dto.ComplaintReportPageSize.Value)
+                    .Take(dto.ComplaintReportPageSize.Value)
+                    .ToList();
+            }
+
+            if (dto.RewardHistoryPageIndex.HasValue && dto.RewardHistoryPageSize.HasValue)
+            {
+                mappedProfile.RewardHistories = mappedProfile.RewardHistories
+                    .Skip(dto.RewardHistoryPageIndex.Value * dto.RewardHistoryPageSize.Value)
+                    .Take(dto.RewardHistoryPageSize.Value)
+                    .ToList();
+            }
+
+            return mappedProfile;
+        }
+        
+        public async Task<IEnumerable<CitizenAreaDTO>> GetCitizenAreas(
+            Guid callerId,
+            string callerRole)
+        {
+            // Validate citizen area list existence
+            var list = await unitOfWork
+                .GetRepository<ICitizenAreaRepository>()
+                .GetAllAsync();
+
+            if (list == null || !list.Any())
+                throw new CitizenAreaNotFound(
+                    "Citizen area list is empty");
+
+            return mapper.Map<IEnumerable<CitizenAreaDTO>>(list);
+        }
+
         public async Task<IEnumerable<CollectionReportDTO>> GetCollectionReports(
             QueryCollectionReportDTO dto,
             Guid callerId, 
@@ -115,7 +172,10 @@ namespace Application.Service
             // Validate collection report list existence
             var list = await unitOfWork
                 .GetRepository<ICitizenProfileRepository>()
-                .GetCollectionReports(dto.RegionCode, dto.WasteType, dto.Description);
+                .GetCollectionReports(
+                dto.RegionCode, 
+                dto.WasteType, 
+                dto.Description);
 
             if (list == null || !list.Any())
                 throw new CollectionReportNotFound(
@@ -163,11 +223,11 @@ namespace Application.Service
             // Validate citizen profile existence
             var profile = await unitOfWork
                 .GetRepository<ICitizenProfileRepository>()
-                .GetCitizenProfileDetailById(dto.CitizenProfileId);
+                .GetCitizenProfileByUserId(callerId);
 
             if (profile == null)
                 throw new CitizenProfileNotFound(
-                    $"The citizen profile with ID: {dto.CitizenProfileId} is not found");
+                    $"The citizen profile with user ID: {callerId} is not found");
 
             // Validate ownership
             ValidateOwnership(profile.UserID, callerId, callerRole);
@@ -205,18 +265,38 @@ namespace Application.Service
             // Validate citizen profile existence
             var profile = await unitOfWork
                 .GetRepository<ICitizenProfileRepository>()
-                .GetByIdAsync(dto.CitizenProfileId);
+                .GetCitizenProfileByUserId(callerId);
 
             if (profile == null)
                 throw new CitizenProfileNotFound(
-                    $"The citizen profile with ID: {dto.CitizenProfileId} is not found");
+                    $"The citizen profile with user ID: {callerId} is not found");
+
+            // Validate collection report existence
+            var collectionReport = await unitOfWork
+                .GetRepository<ICitizenProfileRepository>()
+                .GetCollectionReportById(dto.CollectionReportID);
+
+            if (collectionReport == null)
+                throw new CitizenProfileNotFound(
+                    $"The collection report with ID: {dto.CollectionReportID} is not found");
 
             // Validate ownership
             ValidateOwnership(profile.UserID, callerId, callerRole);
 
+            // Get a default area
+            var areas = await unitOfWork
+                .GetRepository<ICitizenAreaRepository>()
+                .GetAllAsync();
+
+            var area = areas?.FirstOrDefault();
+
+            if (area == null)
+                return;
+
             // Apply domain
             var report = profile.AddComplaintReport(
-                dto.CitizenAreaId,
+                dto.CollectionReportID,
+                area.CitizenAreaID,
                 Guid.NewGuid(),
                 dto.Description,
                 dto.Title,

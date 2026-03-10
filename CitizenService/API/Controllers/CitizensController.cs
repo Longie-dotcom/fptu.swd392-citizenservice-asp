@@ -25,19 +25,8 @@ namespace API.Controllers
         }
 
         #region Methods
-        [AuthorizePrivilege("ViewCitizenArea")]
-        [HttpGet("area")]
-        public async Task<IActionResult> GetCitizenAreas()
-        {
-            var claims = CheckClaimHelper.CheckClaim(User);
-            var areas = await citizenService.GetCitizenAreas(
-                claims.userId,
-                claims.role);
-            return Ok(areas);
-        }
-
         [AuthorizePrivilege("ViewCitizenProfile")]
-        [HttpGet("profile")]
+        [HttpGet]
         public async Task<IActionResult> GetCitizenProfiles(
             [FromQuery] QueryCitizenProfileDTO dto)
         {
@@ -50,7 +39,7 @@ namespace API.Controllers
         }
 
         [AuthorizePrivilege("ViewCitizenProfile")]
-        [HttpGet("profile/{citizenProfileId:guid}")]
+        [HttpGet("{citizenProfileId:guid}")]
         public async Task<IActionResult> GetCitizenProfileDetail(
             Guid citizenProfileId)
         {
@@ -60,6 +49,30 @@ namespace API.Controllers
                 claims.userId,
                 claims.role);
             return Ok(profile);
+        }
+
+        [AuthorizePrivilege("ViewCitizenProfile")]
+        [HttpGet("my-profile")]
+        public async Task<IActionResult> GetMyCitizenProfile(
+            [FromQuery] QueryMyCitizenProfileDTO dto)
+        {
+            var claims = CheckClaimHelper.CheckClaim(User);
+            var profile = await citizenService.GetMyCitizenProfile(
+                claims.userId,
+                claims.role,
+                dto);
+            return Ok(profile);
+        }
+
+        [AuthorizePrivilege("ViewCitizenArea")]
+        [HttpGet("area")]
+        public async Task<IActionResult> GetCitizenAreas()
+        {
+            var claims = CheckClaimHelper.CheckClaim(User);
+            var areas = await citizenService.GetCitizenAreas(
+                claims.userId,
+                claims.role);
+            return Ok(areas);
         }
 
         [AuthorizePrivilege("ViewCollectionReport")]
@@ -75,21 +88,8 @@ namespace API.Controllers
             return Ok(collectionReports);
         }
 
-        [AuthorizePrivilege("ReportComplaint")]
-        [HttpPost("report-complaint")]
-        public async Task<IActionResult> CreateComplaintReport(
-            [FromBody] CreateComplaintReportDTO dto)
-        {
-            var claims = CheckClaimHelper.CheckClaim(User);
-            await citizenService.CreateComplaintReport(
-                dto,
-                claims.userId,
-                claims.role);
-            return Ok("Report complaint successfully.");
-        }
-
-        [AuthorizePrivilege("ReportCollection")]
-        [HttpPost("report-collection")]
+        [AuthorizePrivilege("CreateCollectionReport")]
+        [HttpPost("collection-report")]
         public async Task<IActionResult> CreateCollectionReport(
             [FromBody] CreateCollectionReportDTO dto)
         {
@@ -99,6 +99,19 @@ namespace API.Controllers
                 claims.userId,
                 claims.role);
             return Ok("Report collection successfully.");
+        }
+
+        [AuthorizePrivilege("CreateComplaintReport")]
+        [HttpPost("complaint-report")]
+        public async Task<IActionResult> CreateComplaintReport(
+            [FromBody] CreateComplaintReportDTO dto)
+        {
+            var claims = CheckClaimHelper.CheckClaim(User);
+            await citizenService.CreateComplaintReport(
+                dto,
+                claims.userId,
+                claims.role);
+            return Ok("Report complaint successfully.");
         }
         #endregion
     }

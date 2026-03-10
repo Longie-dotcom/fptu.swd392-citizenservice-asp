@@ -1,4 +1,5 @@
 ﻿using Domain.Aggregate;
+using Domain.DTO;
 using Domain.Entity;
 namespace Domain.IRepository
 {
@@ -7,7 +8,7 @@ namespace Domain.IRepository
         IRepositoryBase
     {
         Task<IEnumerable<CitizenProfile>> GetCitizenProfiles(
-            string displayName,
+            string? displayName,
             int pageIndex,
             int pageSize);
 
@@ -17,10 +18,10 @@ namespace Domain.IRepository
         Task<CitizenProfile?> GetCitizenProfileByUserId(
             Guid userId);
 
-        Task<IEnumerable<CollectionReport>> GetCollectionReports(
-            string regionCode,
-            string wasteType,
-            string description);
+        Task<IEnumerable<CollectionReportDTO>> GetCollectionReports(
+            string? regionCode,
+            string? wasteType,
+            string? description);
 
         Task<CollectionReport?> GetCollectionReportById(
             Guid collectionReportId);
