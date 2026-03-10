@@ -1,6 +1,7 @@
 ﻿using Domain.Aggregate;
 using Domain.DTO;
 using Domain.Entity;
+using Domain.Enum;
 namespace Domain.IRepository
 {
     public interface ICitizenProfileRepository : 
@@ -37,5 +38,17 @@ namespace Domain.IRepository
 
         void UpdateCollectionReport(
             CollectionReport collection);
+
+        Task<IEnumerable<ComplaintReport>> GetComplaintReports(
+            ComplaintReportStatus? status);
+
+        Task<ComplaintReport?> GetComplaintReportById(
+            Guid complaintReportId);
+
+        void UpdateComplaintReport(
+            ComplaintReport complaintReport);
+
+        Task<IEnumerable<(Guid CitizenProfileID, string DisplayName, string AvatarName, int TotalPoints)>> GetLeaderboard(
+            Guid citizenAreaId);
     }
 }

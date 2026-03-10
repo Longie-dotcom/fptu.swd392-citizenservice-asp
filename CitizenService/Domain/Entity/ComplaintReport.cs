@@ -45,6 +45,10 @@ namespace Domain.Entity
         }
 
         #region Methods
+        public void UpdateStatus(ComplaintReportStatus status)
+        {
+            Status = status;
+        }
         #endregion
     }
 }

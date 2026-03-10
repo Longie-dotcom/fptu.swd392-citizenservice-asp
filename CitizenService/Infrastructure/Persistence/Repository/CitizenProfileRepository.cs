@@ -1,5 +1,6 @@
 ﻿using Domain.Aggregate;
 using Domain.Entity;
+using Domain.Enum;
 using Domain.IRepository;
 using Domain.DTO;
 using Microsoft.EntityFrameworkCore;
@@ -129,7 +130,67 @@ namespace Infrastructure.Persistence.Repository
             CollectionReport collection)
         {
             context.CollectionReports.Update(collection);
-        }   
+        }
+
+        public async Task<IEnumerable<ComplaintReport>> GetComplaintReports(
+            ComplaintReportStatus? status)
+        {
+            IQueryable<ComplaintReport> query = context.ComplaintReports
+                .Include(r => r.CitizenArea)
+                .AsNoTracking()
+                .AsQueryable();
+
+            if (status.HasValue)
+                query = query.Where(r => r.Status == status.Value);
+
+            return await query
+                .OrderByDescending(r => r.ReportAt)
+                .ToListAsync();
+        }
+
+        public async Task<ComplaintReport?> GetComplaintReportById(
+            Guid complaintReportId)
+        {
+            return await context.ComplaintReports
+                .Include(r => r.CitizenArea)
+                .FirstOrDefaultAsync(r => r.ComplaintReportID == complaintReportId);
+        }
+
+        public void UpdateComplaintReport(
+            ComplaintReport complaintReport)
+        {
+            context.ComplaintReports.Update(complaintReport);
+        }
+
+        public async Task<IEnumerable<(Guid CitizenProfileID, string DisplayName, string AvatarName, int TotalPoints)>> GetLeaderboard(
+            Guid citizenAreaId)
+        {
+            var result = await context.RewardHistories
+                .AsNoTracking()
+                .Where(r => r.CitizenAreaID == citizenAreaId)
+                .GroupBy(r => r.CitizenProfileID)
+                .Select(g => new
+                {
+                    CitizenProfileID = g.Key,
+                    TotalPoints = g.Sum(r => r.Point)
+                })
+                .OrderByDescending(x => x.TotalPoints)
+                .Join(
+                    context.CitizenProfiles.AsNoTracking(),
+                    leaderItem => leaderItem.CitizenProfileID,
+                    profile => profile.CitizenProfileID,
+                    (leaderItem, profile) => new
+                    {
+                        leaderItem.CitizenProfileID,
+                        profile.DisplayName,
+                        profile.AvatarName,
+                        leaderItem.TotalPoints
+                    }
+                )
+                .ToListAsync();
+
+            return result.Select(x => (x.CitizenProfileID, x.DisplayName, x.AvatarName, x.TotalPoints));
+        }
         #endregion
     }
 }

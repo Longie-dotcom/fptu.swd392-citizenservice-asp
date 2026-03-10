@@ -88,6 +88,19 @@ namespace API.Controllers
             return Ok(collectionReports);
         }
 
+        [AuthorizePrivilege("ViewComplaintReport")]
+        [HttpGet("complaint-report")]
+        public async Task<IActionResult> GetComplaintReports(
+            [FromQuery] QueryComplaintReportDTO dto)
+        {
+            var claims = CheckClaimHelper.CheckClaim(User);
+            var complaintReports = await citizenService.GetComplaintReports(
+                dto,
+                claims.userId,
+                claims.role);
+            return Ok(complaintReports);
+        }
+
         [AuthorizePrivilege("CreateCollectionReport")]
         [HttpPost("collection-report")]
         public async Task<IActionResult> CreateCollectionReport(
@@ -112,6 +125,30 @@ namespace API.Controllers
                 claims.userId,
                 claims.role);
             return Ok("Report complaint successfully.");
+        }
+
+        [AuthorizePrivilege("ResolveComplaintReport")]
+        [HttpPut("complaint-report/{complaintReportId:guid}/resolve")]
+        public async Task<IActionResult> ResolveComplaintReport(
+            Guid complaintReportId,
+            [FromBody] UpdateComplaintReportDTO dto)
+        {
+            dto.ComplaintReportId = complaintReportId;
+            var claims = CheckClaimHelper.CheckClaim(User);
+            await citizenService.ResolveComplaintReport(
+                dto,
+                claims.userId,
+                claims.role);
+            return Ok("Complaint report resolved successfully.");
+        }
+
+        [AllowAnonymous]
+        [HttpGet("leaderboard")]
+        public async Task<IActionResult> GetLeaderboard(
+            [FromQuery] QueryLeaderboardDTO dto)
+        {
+            var result = await citizenService.GetLeaderboard(dto);
+            return Ok(result);
         }
         #endregion
     }
