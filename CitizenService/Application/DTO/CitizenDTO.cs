@@ -117,6 +117,7 @@ namespace Application.DTO
         public string ImageName { get; set; } = string.Empty;
         public ComplaintReportStatus Status { get; set; }
         public DateTime ReportAt { get; set; }
+        public string? AdminNote { get; set; }
         public Guid CollectionReportID { get; set; }
         public Guid CitizenProfileID { get; set; }
         public CitizenAreaDTO CitizenArea { get; set; } = new CitizenAreaDTO();
@@ -139,7 +140,7 @@ namespace Application.DTO
     public class UpdateComplaintReportDTO
     {
         public Guid ComplaintReportId { get; set; }
-        public ComplaintReportStatus Status { get; set; }
+        public string AdminNote { get; set; } = string.Empty;
     }
 
     // UC08 - Leaderboard

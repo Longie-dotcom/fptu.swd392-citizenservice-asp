@@ -15,6 +15,7 @@ namespace Domain.Entity
         public string ImageName { get; private set; }
         public ComplaintReportStatus Status { get; private set; }
         public DateTime ReportAt { get; private set; }
+        public string? AdminNote { get; private set; }
 
         public Guid CollectionReportID { get; private set; }
         public Guid CitizenProfileID { get; private set; }
@@ -45,9 +46,10 @@ namespace Domain.Entity
         }
 
         #region Methods
-        public void UpdateStatus(ComplaintReportStatus status)
+        public void UpdateStatus(string adminNote)
         {
-            Status = status;
+            Status = ComplaintReportStatus.Completed;
+            AdminNote = adminNote;
         }
         #endregion
     }

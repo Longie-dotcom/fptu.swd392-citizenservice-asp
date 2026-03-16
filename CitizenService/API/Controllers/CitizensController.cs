@@ -88,7 +88,7 @@ namespace API.Controllers
             return Ok(collectionReports);
         }
 
-        [AuthorizePrivilege("ViewComplaintReport")]
+        [AuthorizePrivilege("ViewCollectionReport")]
         [HttpGet("complaint-report")]
         public async Task<IActionResult> GetComplaintReports(
             [FromQuery] QueryComplaintReportDTO dto)
@@ -127,13 +127,11 @@ namespace API.Controllers
             return Ok("Report complaint successfully.");
         }
 
-        [AuthorizePrivilege("ResolveComplaintReport")]
-        [HttpPut("complaint-report/{complaintReportId:guid}/resolve")]
+        [AuthorizePrivilege("ViewCollectionReport")]
+        [HttpPut("complaint-report/resolve")]
         public async Task<IActionResult> ResolveComplaintReport(
-            Guid complaintReportId,
             [FromBody] UpdateComplaintReportDTO dto)
         {
-            dto.ComplaintReportId = complaintReportId;
             var claims = CheckClaimHelper.CheckClaim(User);
             await citizenService.ResolveComplaintReport(
                 dto,

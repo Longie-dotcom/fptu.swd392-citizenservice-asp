@@ -105,6 +105,7 @@ namespace Infrastructure.Migrations
                     ImageName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     ReportAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    AdminNote = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CollectionReportID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CitizenProfileID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CitizenAreaID = table.Column<Guid>(type: "uniqueidentifier", nullable: false)

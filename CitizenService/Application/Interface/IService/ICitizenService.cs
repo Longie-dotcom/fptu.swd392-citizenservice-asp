@@ -41,15 +41,6 @@ namespace Application.Interface.IService
             Guid callerId,
             string callerRole);
 
-        Task UserSyncDeleting(
-            SWD392.MessageBroker.UserDeleteDTO dto);
-
-        Task UpdateIncentiveReward(
-            SWD392.MessageBroker.IncentiveRewardDTO dto);
-
-        Task UpdateCollectionReportStatus(
-            SWD392.MessageBroker.CollectionReportStatusUpdateDTO dto);
-
         Task<IEnumerable<ComplaintReportDTO>> GetComplaintReports(
             QueryComplaintReportDTO dto,
             Guid callerId,
@@ -62,5 +53,14 @@ namespace Application.Interface.IService
 
         Task<IEnumerable<LeaderboardEntryDTO>> GetLeaderboard(
             QueryLeaderboardDTO dto);
+
+        Task UserSyncDeleting(
+            SWD392.MessageBroker.UserDeleteDTO dto);
+
+        Task UpdateIncentiveReward(
+            SWD392.MessageBroker.IncentiveRewardDTO dto);
+
+        Task UpdateCollectionReportStatus(
+            SWD392.MessageBroker.CollectionReportStatusUpdateDTO dto);
     }
 }

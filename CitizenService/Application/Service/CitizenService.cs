@@ -310,6 +310,100 @@ namespace Application.Service
             await unitOfWork.CommitAsync(callerId.ToString());
         }
 
+        public async Task ResolveComplaintReport(
+            UpdateComplaintReportDTO dto,
+            Guid callerId,
+            string callerRole)
+        {
+            // Validate authorization
+            ValidateAuthorization(callerRole);
+
+            // Validate complaint report existence
+            var complaintReport = await unitOfWork
+                .GetRepository<ICitizenProfileRepository>()
+                .GetComplaintReportById(dto.ComplaintReportId);
+
+            if (complaintReport == null)
+                throw new ComplaintReportNotFound(
+                    $"The complaint report with ID: {dto.ComplaintReportId} is not found");
+
+            // Apply domain
+            complaintReport.UpdateStatus(dto.AdminNote);
+
+            // Apply persistence
+            await unitOfWork.BeginTransactionAsync();
+            unitOfWork
+                .GetRepository<ICitizenProfileRepository>()
+                .UpdateComplaintReport(complaintReport);
+            await unitOfWork.CommitAsync(callerId.ToString());
+        }
+
+        public async Task<IEnumerable<LeaderboardEntryDTO>> GetLeaderboard(
+            QueryLeaderboardDTO dto)
+        {
+            // Validate citizen area existence
+            var area = await unitOfWork
+                .GetRepository<ICitizenAreaRepository>()
+                .GetByIdAsync(dto.CitizenAreaId);
+
+            if (area == null)
+                throw new CitizenAreaNotFound(
+                    $"The citizen area with ID: {dto.CitizenAreaId} is not found");
+
+            // Fetch ranked results
+            var results = await unitOfWork
+                .GetRepository<ICitizenProfileRepository>()
+                .GetLeaderboard(dto.CitizenAreaId);
+
+            // Manual projection with rank (no AutoMapper - computed result)
+            int rank = 1;
+            return results.Select(r => new LeaderboardEntryDTO
+            {
+                Rank = rank++,
+                CitizenProfileID = r.CitizenProfileID,
+                DisplayName = r.DisplayName,
+                AvatarName = r.AvatarName,
+                TotalPoints = r.TotalPoints
+            }).ToList();
+        }
+
+        public async Task UpdateCollectionReportStatus(CollectionReportStatusUpdateDTO dto)
+        {
+            // Validate collection report existence
+            var collectionReport = await unitOfWork
+                .GetRepository<ICitizenProfileRepository>()
+                .GetCollectionReportById(dto.CollectionReportID);
+
+            if (collectionReport == null)
+                throw new CollectionReportNotFound(
+                    $"The collection report with ID: {dto.CollectionReportID} is not found");
+
+            // Validate status enum
+            if (!System.Enum.TryParse<CollectionReportStatus>(dto.Status, true, out var status))
+                throw new Exception(
+                    $"Invalid collection report status: {dto.Status}");
+
+            // Apply domain
+            collectionReport.UpdateStatus(status);
+
+            // Apply persistence
+            await unitOfWork.BeginTransactionAsync();
+            unitOfWork
+                .GetRepository<ICitizenProfileRepository>()
+                .UpdateCollectionReport(collectionReport);
+            await unitOfWork.CommitAsync();
+
+            // Notify via SignalR   
+            await signalRPublisher.PublishEnvelop(
+                new SignalREnvelope.SignalREnvelope
+                {
+                    Method = "UpdateStatus",
+                    Payload = mapper.Map<CollectionReportDTO>(collectionReport),
+                    Timestamp = DateTime.UtcNow,
+                    SourceService = "CITIZEN_SERVICE"
+                });
+        }
+
         public async Task UserSyncDeleting(UserDeleteDTO dto)
         {
             // Validate citizen profile existence
@@ -397,100 +491,6 @@ namespace Application.Service
                     "Complaint report list is empty");
 
             return mapper.Map<IEnumerable<ComplaintReportDTO>>(list);
-        }
-
-        public async Task ResolveComplaintReport(
-            UpdateComplaintReportDTO dto,
-            Guid callerId,
-            string callerRole)
-        {
-            // Validate authorization
-            ValidateAuthorization(callerRole);
-
-            // Validate complaint report existence
-            var complaintReport = await unitOfWork
-                .GetRepository<ICitizenProfileRepository>()
-                .GetComplaintReportById(dto.ComplaintReportId);
-
-            if (complaintReport == null)
-                throw new ComplaintReportNotFound(
-                    $"The complaint report with ID: {dto.ComplaintReportId} is not found");
-
-            // Apply domain
-            complaintReport.UpdateStatus(dto.Status);
-
-            // Apply persistence
-            await unitOfWork.BeginTransactionAsync();
-            unitOfWork
-                .GetRepository<ICitizenProfileRepository>()
-                .UpdateComplaintReport(complaintReport);
-            await unitOfWork.CommitAsync(callerId.ToString());
-        }
-
-        public async Task<IEnumerable<LeaderboardEntryDTO>> GetLeaderboard(
-            QueryLeaderboardDTO dto)
-        {
-            // Validate citizen area existence
-            var area = await unitOfWork
-                .GetRepository<ICitizenAreaRepository>()
-                .GetByIdAsync(dto.CitizenAreaId);
-
-            if (area == null)
-                throw new CitizenAreaNotFound(
-                    $"The citizen area with ID: {dto.CitizenAreaId} is not found");
-
-            // Fetch ranked results
-            var results = await unitOfWork
-                .GetRepository<ICitizenProfileRepository>()
-                .GetLeaderboard(dto.CitizenAreaId);
-
-            // Manual projection with rank (no AutoMapper - computed result)
-            int rank = 1;
-            return results.Select(r => new LeaderboardEntryDTO
-            {
-                Rank = rank++,
-                CitizenProfileID = r.CitizenProfileID,
-                DisplayName = r.DisplayName,
-                AvatarName = r.AvatarName,
-                TotalPoints = r.TotalPoints
-            }).ToList();
-        }
-
-        public async Task UpdateCollectionReportStatus(CollectionReportStatusUpdateDTO dto)
-        {
-            // Validate collection report existence
-            var collectionReport = await unitOfWork
-                .GetRepository<ICitizenProfileRepository>()
-                .GetCollectionReportById(dto.CollectionReportID);
-
-            if (collectionReport == null)
-                throw new CollectionReportNotFound(
-                    $"The collection report with ID: {dto.CollectionReportID} is not found");
-
-            // Validate status enum
-            if (!System.Enum.TryParse<CollectionReportStatus>(dto.Status, true, out var status))
-                throw new Exception(
-                    $"Invalid collection report status: {dto.Status}");
-
-            // Apply domain
-            collectionReport.UpdateStatus(status);
-
-            // Apply persistence
-            await unitOfWork.BeginTransactionAsync();
-            unitOfWork
-                .GetRepository<ICitizenProfileRepository>()
-                .UpdateCollectionReport(collectionReport);
-            await unitOfWork.CommitAsync();
-
-            // Notify via SignalR   
-            await signalRPublisher.PublishEnvelop(
-                new SignalREnvelope.SignalREnvelope
-                {
-                    Method = "UpdateStatus",
-                    Payload = mapper.Map<CollectionReportDTO>(collectionReport),
-                    Timestamp = DateTime.UtcNow,
-                    SourceService = "CITIZEN_SERVICE"
-                });
         }
         #endregion
 

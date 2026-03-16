@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(CitizenDBContext))]
-    [Migration("20260225025525_Init")]
+    [Migration("20260311034803_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -171,6 +171,9 @@ namespace Infrastructure.Migrations
                     b.Property<Guid>("ComplaintReportID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AdminNote")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("CitizenAreaID")
                         .HasColumnType("uniqueidentifier");

@@ -101,6 +101,7 @@ public class CitizenDBContext : DbContext
             entity.Property(r => r.ImageName);
             entity.Property(r => r.Status).IsRequired();
             entity.Property(r => r.ReportAt).IsRequired();
+            entity.Property(r => r.AdminNote);
 
             entity.HasOne(r => r.CitizenArea)
                   .WithMany()

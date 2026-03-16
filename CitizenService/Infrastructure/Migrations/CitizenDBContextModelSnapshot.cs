@@ -169,6 +169,9 @@ namespace Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("AdminNote")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid>("CitizenAreaID")
                         .HasColumnType("uniqueidentifier");
 
