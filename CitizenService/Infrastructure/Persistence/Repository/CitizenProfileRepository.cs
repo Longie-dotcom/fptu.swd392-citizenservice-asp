@@ -101,6 +101,25 @@ namespace Infrastructure.Persistence.Repository
             return result;
         }
 
+        public async Task<CollectionReportDTO?> GetCollectionReportDetailById(
+            Guid collectionReportId)
+        {
+            var result = await context.CollectionReports
+                .AsNoTracking()
+                .Where(r => r.CollectionReportID == collectionReportId)
+                .Join(context.CitizenProfiles,
+                    report => report.CitizenProfileID,
+                    citizen => citizen.CitizenProfileID,
+                    (report, citizen) => new CollectionReportDTO
+                    {
+                        CollectionReport = report,
+                        CitizenName = citizen.DisplayName
+                    })
+                .FirstOrDefaultAsync();
+
+            return result;
+        }
+
         public async Task<CollectionReport?> GetCollectionReportById(
             Guid collectionReportId)
         {

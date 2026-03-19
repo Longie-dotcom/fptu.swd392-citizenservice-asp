@@ -88,6 +88,19 @@ namespace API.Controllers
             return Ok(collectionReports);
         }
 
+        [AuthorizePrivilege("ViewMyCollectionTask")]
+        [HttpGet("collection-report/{id:guid}")]
+        public async Task<IActionResult> GetCollectionReportDetail(
+            Guid id)
+        {
+            var claims = CheckClaimHelper.CheckClaim(User);
+            var collectionReports = await citizenService.GetCollectionReportDetail(
+                id,
+                claims.userId,
+                claims.role);
+            return Ok(collectionReports);
+        }
+
         [AuthorizePrivilege("ViewCollectionReport")]
         [HttpGet("complaint-report")]
         public async Task<IActionResult> GetComplaintReports(

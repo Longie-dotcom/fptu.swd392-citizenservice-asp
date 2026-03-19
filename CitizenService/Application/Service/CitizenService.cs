@@ -184,6 +184,23 @@ namespace Application.Service
             return mapper.Map<IEnumerable<CollectionReportDTO>>(list);
         }
 
+        public async Task<CollectionReportDTO> GetCollectionReportDetail(
+            Guid collectionReportId, 
+            Guid callerId, 
+            string callerRole)
+        {
+            // Validate collection report list existence
+            var report = await unitOfWork
+                .GetRepository<ICitizenProfileRepository>()
+                .GetCollectionReportDetailById(collectionReportId);
+
+            if (report == null)
+                throw new CollectionReportNotFound(
+                    $"Collection report with ID: {collectionReportId} is not found");
+
+            return mapper.Map<CollectionReportDTO>(report);
+        }
+
         public async Task CreateCitizenProfile(
             CreateCitizenProfileDTO dto)
         {

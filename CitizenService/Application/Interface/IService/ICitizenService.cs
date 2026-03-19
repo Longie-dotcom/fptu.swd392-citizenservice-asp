@@ -1,4 +1,5 @@
 ﻿using Application.DTO;
+using System.Security.Claims;
 
 namespace Application.Interface.IService
 {
@@ -25,6 +26,11 @@ namespace Application.Interface.IService
 
         Task<IEnumerable<CollectionReportDTO>> GetCollectionReports(
             QueryCollectionReportDTO dto,
+            Guid callerId,
+            string callerRole);
+
+        Task<CollectionReportDTO> GetCollectionReportDetail(
+            Guid collectionReportId,
             Guid callerId,
             string callerRole);
 

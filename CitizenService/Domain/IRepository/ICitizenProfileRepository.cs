@@ -24,6 +24,9 @@ namespace Domain.IRepository
             string? wasteType,
             string? description);
 
+        Task<CollectionReportDTO?> GetCollectionReportDetailById(
+            Guid collectionReportId);
+
         Task<CollectionReport?> GetCollectionReportById(
             Guid collectionReportId);
 
